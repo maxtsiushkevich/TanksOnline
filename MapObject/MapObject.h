@@ -1,0 +1,74 @@
+#ifndef GAME_MAPOBJECT_H
+#define GAME_MAPOBJECT_H
+
+#include "../IGameObject/IGameObject.h"
+
+extern float FACTOR;
+
+//class MapObject : public IGameObject
+//{
+//protected:
+//    bool isDestroyed;
+//public:
+//    void setIsDestroyed() { isDestroyed = true; }
+//    bool getIsDestroyed() { return isDestroyed; }
+//};
+
+class Brick : public IGameObject
+{
+public:
+    Brick(float x, float y);
+    void update(float time) override {};
+    void render(sf::RenderWindow &window) override;
+    void checkCollision(IVisitor *visitor) override;
+
+};
+class Metal : public IGameObject
+{
+public:
+    Metal(float x, float y);
+    void update(float time) override {};
+    void render(sf::RenderWindow &window) override;
+    void checkCollision(IVisitor *visitor) override;
+};
+
+class Water : public IGameObject
+{
+public:
+    Water(float x, float y);
+    void update(float time) override {};
+    void render(sf::RenderWindow &window) override;
+    void checkCollision(IVisitor *visitor) override;
+};
+
+class Grass : public IGameObject
+{
+public:
+    Grass(float x, float y);
+    void update(float time) {};
+    void render(sf::RenderWindow &window);
+    void checkCollision(IVisitor *visitor) override;
+};
+
+//class Eagle : public IGameObject
+//{
+//protected:
+//    Eagle(float x, float y) : IGameObject(x, y)
+//    {
+//        //sprite.setTextureRect(sf::IntRect(0, 16, 16, 16));
+//        sprite.setPosition(x, y);
+//        sprite.setScale(FACTOR, FACTOR);
+//    }
+//};
+//
+//class Flag : public IGameObject
+//{
+//protected:
+//    Flag(float x, float y) : IGameObject(x, y)
+//    {
+//        //sprite.setTextureRect(sf::IntRect(0, 16, 16, 16));
+//        sprite.setPosition(x, y);
+//        sprite.setScale(FACTOR, FACTOR);
+//    }
+//};
+#endif //GAME_MAPOBJECT_H
