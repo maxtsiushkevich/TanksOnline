@@ -57,5 +57,12 @@ void Map :: loadMap(std::vector<IGameObject*>& map, int levelNum)
 
 void Map :: update(std::vector<IGameObject*>& map)
 {
+    // здесь посетитель для вектора объектов
+}
 
+void Map :: render (std::vector<IGameObject*>& map, sf::RenderWindow &window)
+{
+    for (auto object : map) {
+        object->render(window);
+    }
 }

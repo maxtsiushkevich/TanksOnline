@@ -1,27 +1,27 @@
 #include "MapObject.h"
 
-Brick :: Brick(float x, float y) : IGameObject(x, y)
+Brick :: Brick(float x, float y) : MapObject(x, y)
 {
     sprite.setTextureRect(sf::IntRect(256 , 64, 8, 8));
     sprite.setPosition(x, y);
     sprite.setScale(FACTOR, FACTOR);
 }
 
-Metal :: Metal(float x, float y) : IGameObject(x, y)
+Metal :: Metal(float x, float y) : MapObject(x, y)
 {
     sprite.setTextureRect(sf::IntRect(256, 72, 8, 8));
     sprite.setPosition(x, y);
     sprite.setScale(FACTOR, FACTOR);
 }
 
-Water :: Water(float x, float y) : IGameObject(x, y)
+Water :: Water(float x, float y) : MapObject(x, y)
 {
     sprite.setTextureRect(sf::IntRect(256, 80, 8, 8));
     sprite.setPosition(x, y);
     sprite.setScale(FACTOR, FACTOR);
 }
 
-Grass :: Grass(float x, float y) : IGameObject(x, y)
+Grass :: Grass(float x, float y) : MapObject(x, y)
 {
     sprite.setTextureRect(sf::IntRect(264, 72, 8, 8));
     sprite.setPosition(x, y);

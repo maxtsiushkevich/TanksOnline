@@ -14,7 +14,11 @@ private:
 
     IGameObject *playerTank;
 
-    std::vector<IGameObject*> map;
+    std::vector<IGameObject*> map; // объекты карты
+    std::vector<IGameObject*> tanks; // все танки
+    std::vector<IGameObject*> allBullets;
+
+    std::vector<IGameObject*> enemyTanks; // заполняется рандомно
 
     bool isPaused;
     sf::Clock clock;
@@ -25,6 +29,7 @@ public:
     ~GameEngine() = default;
     void init();
     void update();
+    void handleCollisions();
     void togglePause();
     void render();
     void end();

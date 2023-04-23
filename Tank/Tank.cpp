@@ -1,7 +1,7 @@
 #include "Tank.h"
 #include "../Bullet/Bullet.h"
 
-Tank :: Tank(float x, float y, float speed, int health) : IGameObject(x, y), health(health)
+Tank :: Tank(float x, float y, float speed, int health, std::vector<IGameObject*>& allBullets) : IGameObject(x, y), health(health), allBullets(allBullets)
 {
     animation = 0;
     tankDestination = UP;
@@ -16,7 +16,7 @@ Tank :: ~Tank()
         delete bullet;
 }
 
-PlayerTank :: PlayerTank(float x, float y) : Tank(x, y, 45.f, 3), stars(0)
+PlayerTank :: PlayerTank(float x, float y, std::vector<IGameObject*>& allBullets) : Tank(x, y, 45.f, 3, allBullets), stars(0)
 {
     sprite.setTextureRect(sf::IntRect(0, 16 * stars, 16, 16));
     sprite.setPosition(x, y);
@@ -61,11 +61,12 @@ void PlayerTank :: shoot()
             bullet = new PlayerPowerfulBullet(dx, dy, tankDestination);
             break;
     }
+    allBullets.emplace_back(bullet);
     canShoot = false;
 }
 
 
-void PlayerTank ::checkCollision(IVisitor *visitor)
+void PlayerTank :: checkCollision(IVisitor *visitor)
 {
     visitor->visit(*this);
 }

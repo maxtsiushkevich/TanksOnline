@@ -10,8 +10,8 @@ void GameEngine :: init()
 
     levelNum = 1;
     Map::loadMap(map, levelNum);
-
-    playerTank = new PlayerTank(64 * FACTOR, 192 * FACTOR);
+    playerTank = new PlayerTank(64 * FACTOR, 192 * FACTOR, allBullets);
+    // рандомно заполняем вектор с танками врага
 }
 
 void GameEngine :: togglePause()
@@ -35,17 +35,23 @@ void GameEngine :: update()
         clock.restart();
 }
 
+void GameEngine :: handleCollisions()
+{
+
+}
+
 void GameEngine :: render()
 {
     playerTank->render(window);
 
-    for (auto object : map) {
-        object->render(window);
-    }
+    Map::render(map, window);
 }
 
 
 void GameEngine :: end()
 {
     delete playerTank;
+    //for (auto object : map) {
+    //    delete object;
+    //}
 }

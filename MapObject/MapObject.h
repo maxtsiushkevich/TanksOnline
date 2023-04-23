@@ -5,16 +5,17 @@
 
 extern float FACTOR;
 
-//class MapObject : public IGameObject
-//{
-//protected:
-//    bool isDestroyed;
-//public:
-//    void setIsDestroyed() { isDestroyed = true; }
-//    bool getIsDestroyed() { return isDestroyed; }
-//};
+class MapObject : public IGameObject
+{
+protected:
+    bool isDestroyed;
+public:
+    MapObject(float x, float y) : IGameObject(x, y) { }
+    void setIsDestroyed() { isDestroyed = true; }
+    bool getIsDestroyed() { return isDestroyed; }
+};
 
-class Brick : public IGameObject
+class Brick : public MapObject
 {
 public:
     Brick(float x, float y);
@@ -23,7 +24,7 @@ public:
     void checkCollision(IVisitor *visitor) override;
 
 };
-class Metal : public IGameObject
+class Metal : public MapObject
 {
 public:
     Metal(float x, float y);
@@ -32,7 +33,7 @@ public:
     void checkCollision(IVisitor *visitor) override;
 };
 
-class Water : public IGameObject
+class Water : public MapObject
 {
 public:
     Water(float x, float y);
@@ -41,12 +42,12 @@ public:
     void checkCollision(IVisitor *visitor) override;
 };
 
-class Grass : public IGameObject
+class Grass : public MapObject
 {
 public:
     Grass(float x, float y);
-    void update(float time) {};
-    void render(sf::RenderWindow &window);
+    void update(float time) override {};
+    void render(sf::RenderWindow &window) override;
     void checkCollision(IVisitor *visitor) override;
 };
 
@@ -71,4 +72,5 @@ public:
 //        sprite.setScale(FACTOR, FACTOR);
 //    }
 //};
+
 #endif //GAME_MAPOBJECT_H

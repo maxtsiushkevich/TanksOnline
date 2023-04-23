@@ -8,9 +8,6 @@ float FACTOR = 5.f;
 
 int main()
 {
-
-    IGameObject *t = new Metal(1, 2);
-
     sf::RenderWindow window;
     window.create(sf::VideoMode(208. * FACTOR + 32. * FACTOR , 208. * FACTOR), "Tanks Online", sf::Style::Close | sf::Style::Titlebar);
     window.setFramerateLimit(60);
@@ -32,6 +29,7 @@ int main()
         window.clear();
 
         engine.update();
+        // проверяем коллизии
         engine.render();
 
         window.display();

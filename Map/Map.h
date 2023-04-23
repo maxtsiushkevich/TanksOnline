@@ -10,6 +10,7 @@ public:
     ~Map() = default;
     static void loadMap(std::vector<IGameObject*>& map, int levelNum);
     static void update(std::vector<IGameObject*>& map);
+    static void render(std::vector<IGameObject*>& map, sf::RenderWindow &window);
 };
 
 
