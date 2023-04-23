@@ -37,7 +37,51 @@ void GameEngine :: update()
 
 void GameEngine :: handleCollisions()
 {
+    std::vector<IGameObject*> allObjects;
+    allObjects.reserve(1 + map.size() + enemyTanks.size() + allBullets.size());
 
+    allObjects.emplace_back(playerTank);
+    allObjects.insert(allObjects.end(), enemyTanks.begin(), enemyTanks.end());
+    allObjects.insert(allObjects.end(), allBullets.begin(), allBullets.end());
+
+    IVisitor *visitor;
+
+    for (auto object : allObjects)
+    {
+        visitor = new CollisionWithTankVisitor();
+
+        // проверка с танком игрока
+        //if () // И УКАЗАТЕЛИ НЕ РАВНЫ
+        //    object->handleCollision(visitor);
+
+        for (auto enemy : enemyTanks)
+        {
+            //if ()
+            //    object->handleCollision(visitor);
+
+        }
+
+        delete visitor;
+        visitor = new CollisionWithBulletVisitor();
+
+        for (auto bullet : allBullets)
+        {
+
+            //if () // И УКАЗАТЕЛИ НЕ РАВНЫ
+            //    object->handleCollision(visitor);
+        }
+
+        delete visitor;
+        visitor = new CollisionWithMapObjectVisitor();
+
+        for (auto mapObject : map)
+        {
+            //if () // И УКАЗАТЕЛИ НЕ РАВНЫ
+            //    object->handleCollision();
+        }
+
+        delete visitor;
+    }
 }
 
 void GameEngine :: render()
@@ -51,6 +95,7 @@ void GameEngine :: render()
 void GameEngine :: end()
 {
     delete playerTank;
+
     //for (auto object : map) {
     //    delete object;
     //}

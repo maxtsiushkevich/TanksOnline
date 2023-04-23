@@ -21,7 +21,7 @@ public:
     Brick(float x, float y);
     void update(float time) override {};
     void render(sf::RenderWindow &window) override;
-    void checkCollision(IVisitor *visitor) override;
+    void handleCollision(IVisitor *visitor) override;
 
 };
 class Metal : public MapObject
@@ -30,7 +30,7 @@ public:
     Metal(float x, float y);
     void update(float time) override {};
     void render(sf::RenderWindow &window) override;
-    void checkCollision(IVisitor *visitor) override;
+    void handleCollision(IVisitor *visitor) override;
 };
 
 class Water : public MapObject
@@ -39,7 +39,7 @@ public:
     Water(float x, float y);
     void update(float time) override {};
     void render(sf::RenderWindow &window) override;
-    void checkCollision(IVisitor *visitor) override;
+    void handleCollision(IVisitor *visitor) override;
 };
 
 class Grass : public MapObject
@@ -48,7 +48,7 @@ public:
     Grass(float x, float y);
     void update(float time) override {};
     void render(sf::RenderWindow &window) override;
-    void checkCollision(IVisitor *visitor) override;
+    void handleCollision(IVisitor *visitor) override;
 };
 
 //class Eagle : public IGameObject

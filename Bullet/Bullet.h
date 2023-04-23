@@ -24,7 +24,7 @@ class PlayerBullet : public Bullet // пуля игрока
 {
 public:
     PlayerBullet(float x, float y, Destination dest) : Bullet(x, y, 110.f, dest) { }
-    void checkCollision(IVisitor *visitor) override
+    void handleCollision(IVisitor *visitor) override
     {
         visitor->visit(*this);
     }
@@ -34,7 +34,7 @@ class PlayerFastBullet : public Bullet
 {
 public:
     PlayerFastBullet(float x, float y, Destination dest) : Bullet(x, y, 220.f, dest) { }
-    void checkCollision(IVisitor *visitor) override
+    void handleCollision(IVisitor *visitor) override
     {
         visitor->visit(*this);
     }
@@ -44,7 +44,7 @@ class PlayerPowerfulBullet : public Bullet
 {
 public:
     PlayerPowerfulBullet(float x, float y, Destination dest) : Bullet(x, y, 110.f, dest) { }
-    void checkCollision(IVisitor *visitor) override
+    void handleCollision(IVisitor *visitor) override
     {
         visitor->visit(*this);
     }
@@ -54,7 +54,7 @@ class EnemyBullet : public Bullet // пуля врага
 {
 public:
     EnemyBullet(float x, float y, Destination dest) : Bullet(x, y, 110.f, dest) { }
-    void checkCollision(IVisitor *visitor) override
+    void handleCollision(IVisitor *visitor) override
     {
         visitor->visit(*this);
     }
@@ -64,7 +64,7 @@ class EnemySpeedBullet : public Bullet // пуля врага
 {
 public:
     EnemySpeedBullet(float x, float y, Destination dest) : Bullet(x, y, 220.f, dest) { }
-    void checkCollision(IVisitor *visitor) override
+    void handleCollision(IVisitor *visitor) override
     {
         visitor->visit(*this);
     }

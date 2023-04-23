@@ -49,19 +49,19 @@ void Grass :: render(sf::RenderWindow &window)
 }
 
 
-void Brick :: checkCollision(IVisitor *visitor)
+void Brick :: handleCollision(IVisitor *visitor)
 {
     //visitor->visit(*this);
 }
-void Metal :: checkCollision(IVisitor *visitor)
+void Metal :: handleCollision(IVisitor *visitor)
 {
     //visitor->visit(*this);
 }
-void Water :: checkCollision(IVisitor *visitor)
+void Water :: handleCollision(IVisitor *visitor)
 {
     //visitor->visit(*this);
 }
-void Grass :: checkCollision(IVisitor *visitor)
+void Grass :: handleCollision(IVisitor *visitor)
 {
     //visitor->visit(*this);
 }

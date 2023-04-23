@@ -27,7 +27,7 @@ public:
     virtual ~IGameObject() = default;
     virtual void update(float time) = 0;
     virtual void render(sf::RenderWindow &window) = 0;
-    virtual void checkCollision(IVisitor *visitor) = 0;
+    virtual void handleCollision(IVisitor *visitor) = 0;
 };
 
 

@@ -66,7 +66,7 @@ void PlayerTank :: shoot()
 }
 
 
-void PlayerTank :: checkCollision(IVisitor *visitor)
+void PlayerTank :: handleCollision(IVisitor *visitor)
 {
     visitor->visit(*this);
 }

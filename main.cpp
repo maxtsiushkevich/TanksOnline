@@ -29,6 +29,7 @@ int main()
         window.clear();
 
         engine.update();
+        engine.handleCollisions();
         // проверяем коллизии
         engine.render();
 

@@ -35,7 +35,7 @@ public:
     void move(float distance) override;
     void shoot() override;
     void addStar();
-    void checkCollision(IVisitor *visitor) override;
+    void handleCollision(IVisitor *visitor) override;
 };
 
 #endif
