@@ -1,43 +1,67 @@
 #include "GameEngine.h"
 #include "../Tank/Tank.h"
+#include "../Bullet/Bullet.h"
 #include "../Map/Map.h"
 
-void GameEngine :: init()
-{
+#include <iostream>
+
+void GameEngine::init() {
     mainTexture.loadFromFile("SpriteList.png");
 
     IGameObject::texture = mainTexture;
 
     levelNum = 1;
     Map::loadMap(map, levelNum);
-    playerTank = new PlayerTank(64 * FACTOR, 192 * FACTOR, allBullets);
+
+    //playerTank = new PlayerTank(64 * FACTOR, 192 * FACTOR, allBullets);
+
     // рандомно заполняем вектор с танками врага
+
+    playerTank = std::make_unique<PlayerTank>(64 * FACTOR, 192 * FACTOR, allBullets);
 }
 
-void GameEngine :: togglePause()
-{
+void GameEngine::togglePause() {
     isPaused = !isPaused;
 }
 
-void GameEngine :: update()
+void GameEngine::update()
 {
-    if(!isPaused)
+    if (!isPaused)
     {
         sf::Time time = clock.restart();
         float seconds = time.asSeconds();
 
         playerTank->update(seconds);
 
-        // проверяем вектор врагов, если пуст какая-нибудь заставка и переход на новый уровень
+        std::cout << allBullets.size() << std::endl;
 
+        for (auto &gameObject : allBullets)
+        {
+            if (auto *bullet = dynamic_cast<Bullet *>(gameObject.get()))
+            {
+                if (bullet->getIsDestroyed())
+                {
+                    if (auto *tank = dynamic_cast<Tank *>(bullet->getOwner()))
+                        tank->enableShooting();
+                    gameObject.reset();
+                }
+                else
+                {
+                    bullet->update(seconds);
+                }
+            }
+        }
+        allBullets.erase(std::remove_if(allBullets.begin(), allBullets.end(), [](const auto &gameObject)
+        { return gameObject == nullptr; }), allBullets.end()); // возможно удаляет все элементы после нулевого указателя
     }
     else
         clock.restart();
 }
 
-void GameEngine :: handleCollisions()
+void GameEngine::handleCollisions()
 {
-    std::vector<IGameObject*> allObjects;
+   /*
+   std::vector<IGameObject *> allObjects;
     allObjects.reserve(1 + map.size() + enemyTanks.size() + allBullets.size());
 
     allObjects.emplace_back(playerTank);
@@ -46,47 +70,54 @@ void GameEngine :: handleCollisions()
 
     IVisitor *visitor;
 
-    for (auto object : allObjects)
+    for (auto object: allObjects)
     {
-        visitor = new CollisionWithTankVisitor();
 
         // проверка с танком игрока
-        //if () // И УКАЗАТЕЛИ НЕ РАВНЫ
-        //    object->handleCollision(visitor);
+        if (object->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds()) &&
+            object != playerTank) {
+            visitor = new CollisionWithTankVisitor();
+            object->handleCollision(visitor);
+            delete visitor;
+        }
 
-        for (auto enemy : enemyTanks)
-        {
-            //if ()
-            //    object->handleCollision(visitor);
+        for (auto enemy: enemyTanks) {
+            if (object->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) &&
+                object != enemy) {
+                visitor = new CollisionWithTankVisitor();
+                object->handleCollision(visitor);
+                delete visitor;
+            }
 
         }
 
-        delete visitor;
-        visitor = new CollisionWithBulletVisitor();
-
-        for (auto bullet : allBullets)
-        {
-
-            //if () // И УКАЗАТЕЛИ НЕ РАВНЫ
-            //    object->handleCollision(visitor);
+        for (auto bullet: allBullets) {
+            if (object->getSprite().getGlobalBounds().intersects(bullet->getSprite().getGlobalBounds()) &&
+                object != bullet) {
+                visitor = new CollisionWithBulletVisitor();
+                object->handleCollision(visitor);
+                delete visitor;
+            }
         }
 
-        delete visitor;
-        visitor = new CollisionWithMapObjectVisitor();
-
-        for (auto mapObject : map)
-        {
-            //if () // И УКАЗАТЕЛИ НЕ РАВНЫ
-            //    object->handleCollision();
+        for (auto mapObject: map) {
+            if (object->getSprite().getGlobalBounds().intersects(mapObject->getSprite().getGlobalBounds()) &&
+                object != mapObject) {
+                visitor = new CollisionWithMapObjectVisitor();
+                object->handleCollision(visitor);
+                delete visitor;
+            }
         }
-
-        delete visitor;
-    }
+    } */
 }
 
-void GameEngine :: render()
+void GameEngine::render()
 {
     playerTank->render(window);
+
+    for (auto& bullet : allBullets) {
+        bullet->render(window);
+    }
 
     Map::render(map, window);
 }
@@ -94,9 +125,5 @@ void GameEngine :: render()
 
 void GameEngine :: end()
 {
-    delete playerTank;
-
-    //for (auto object : map) {
-    //    delete object;
-    //}
+    // заставка мб
 }

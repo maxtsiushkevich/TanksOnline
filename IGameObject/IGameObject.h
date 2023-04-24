@@ -4,30 +4,26 @@
 #include <SFML/Graphics.hpp>
 #include "../IVisitor/IVisitor.h"
 
-enum Destination
-{
+enum Destination {
     UP,
     LEFT,
     DOWN,
     RIGHT
 };
 
-class IGameObject
-{
+class IGameObject {
 protected:
 
     sf::Sprite sprite;
     float dx, dy;
 public:
-    IGameObject(float x, float y) : dx(x), dy(y)
-    {
-        sprite.setTexture((IGameObject::texture));
-    }
+    IGameObject(float x, float y);
     static sf::Texture texture;
     virtual ~IGameObject() = default;
     virtual void update(float time) = 0;
     virtual void render(sf::RenderWindow &window) = 0;
     virtual void handleCollision(IVisitor *visitor) = 0;
+    sf::Sprite &getSprite();
 };
 
 

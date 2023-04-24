@@ -6,28 +6,25 @@
 
 extern float FACTOR;
 
-class GameEngine
-{
+class GameEngine {
 private:
     sf::RenderWindow &window;
     sf::Texture mainTexture;
 
-    IGameObject *playerTank;
+    std::unique_ptr<IGameObject> playerTank;
 
-    std::vector<IGameObject*> map; // объекты карты
+    std::vector<std::unique_ptr<IGameObject>> map;
 
-    //std::vector<IGameObject*> tanks; // все танки
+    std::vector<std::unique_ptr<IGameObject>> allBullets;
 
-    std::vector<IGameObject*> allBullets;
-
-    std::vector<IGameObject*> enemyTanks; // заполняется рандомно
+    std::vector<std::unique_ptr<IGameObject>> enemyTanks;
 
     bool isPaused;
     sf::Clock clock;
 
     int levelNum;
 public:
-    GameEngine(sf::RenderWindow &window) : window(window) { }
+    GameEngine(sf::RenderWindow &window) : window(window) {}
     ~GameEngine() = default;
     void init();
     void update();

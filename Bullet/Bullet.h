@@ -5,47 +5,46 @@
 
 extern float FACTOR;
 
-class Bullet : public IGameObject
-{
+class Bullet : public IGameObject {
 protected:
     float speed;
     bool isDestroyed;
+    IGameObject *owner;
     Destination bulletDestination;
 public:
-    Bullet(float x, float y, float speed, Destination dest);
+    Bullet(float x, float y, float speed, Destination dest, IGameObject *owner);
     ~Bullet() override = default;
     void update(float time) override;
     void render(sf::RenderWindow &window) override;
     bool getIsDestroyed() const;
     bool checkBounds();
+    IGameObject* getOwner() const;
 };
 
 class PlayerBullet : public Bullet // пуля игрока
 {
 public:
-    PlayerBullet(float x, float y, Destination dest) : Bullet(x, y, 110.f, dest) { }
-    void handleCollision(IVisitor *visitor) override
-    {
+    PlayerBullet(float x, float y, Destination dest, IGameObject *owner) : Bullet(x, y, 110.f, dest, owner) {}
+
+    void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
     }
 };
 
-class PlayerFastBullet : public Bullet
-{
+class PlayerFastBullet : public Bullet {
 public:
-    PlayerFastBullet(float x, float y, Destination dest) : Bullet(x, y, 220.f, dest) { }
-    void handleCollision(IVisitor *visitor) override
-    {
+    PlayerFastBullet(float x, float y, Destination dest, IGameObject *owner) : Bullet(x, y, 220.f, dest, owner) {}
+
+    void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
     }
 };
 
-class PlayerPowerfulBullet : public Bullet
-{
+class PlayerPowerfulBullet : public Bullet {
 public:
-    PlayerPowerfulBullet(float x, float y, Destination dest) : Bullet(x, y, 110.f, dest) { }
-    void handleCollision(IVisitor *visitor) override
-    {
+    PlayerPowerfulBullet(float x, float y, Destination dest, IGameObject *owner) : Bullet(x, y, 110.f, dest, owner) {}
+
+    void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
     }
 };
@@ -53,9 +52,9 @@ public:
 class EnemyBullet : public Bullet // пуля врага
 {
 public:
-    EnemyBullet(float x, float y, Destination dest) : Bullet(x, y, 110.f, dest) { }
-    void handleCollision(IVisitor *visitor) override
-    {
+    EnemyBullet(float x, float y, Destination dest, IGameObject *owner) : Bullet(x, y, 110.f, dest, owner) {}
+
+    void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
     }
 };
@@ -63,9 +62,9 @@ public:
 class EnemySpeedBullet : public Bullet // пуля врага
 {
 public:
-    EnemySpeedBullet(float x, float y, Destination dest) : Bullet(x, y, 220.f, dest) { }
-    void handleCollision(IVisitor *visitor) override
-    {
+    EnemySpeedBullet(float x, float y, Destination dest, IGameObject *owner) : Bullet(x, y, 220.f, dest, owner) {}
+
+    void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
     }
 };

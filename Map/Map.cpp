@@ -4,8 +4,7 @@
 
 #include "../MapObject/MapObject.h"
 
-void Map :: loadMap(std::vector<IGameObject*>& map, int levelNum)
-{
+void Map::loadMap(std::vector<std::unique_ptr<IGameObject>> &map, int levelNum) {
     std::string levelFile = "level" + std::to_string(levelNum);
 
     std::ifstream file(levelFile);
@@ -17,37 +16,37 @@ void Map :: loadMap(std::vector<IGameObject*>& map, int levelNum)
     int x = 0;
     int y = 0;
     char c;
-    while (file.get(c))
-    {
-        if (!std::isspace(c))
-        {
-            IGameObject *obj;
+    while (file.get(c)) {
+        if (!std::isspace(c)) {
+            //IGameObject *obj;
+
+            //allBullets.emplace_back(std::make_unique<PlayerBullet>(dx, dy, tankDestination));
+
             // создаем соответсвующий объект и добавляем в вектор
-            switch(c)
-            {
+            switch (c) {
                 case 'B':
-                    obj = new Brick(x*FACTOR*8, y*FACTOR*8);
+                    //obj = new Brick(x * FACTOR * 8, y * FACTOR * 8);
+                    map.emplace_back(std::make_unique<Brick>(x * FACTOR * 8, y * FACTOR * 8));
                     break;
                 case 'M':
-                    obj = new Metal(x*FACTOR*8, y*FACTOR*8);
+                    //obj = new Metal(x * FACTOR * 8, y * FACTOR * 8);
+                    map.emplace_back(std::make_unique<Metal>(x * FACTOR * 8, y * FACTOR * 8));
                     break;
                 case 'W':
-                    obj = new Water(x*FACTOR*8, y*FACTOR*8);
+                    //obj = new Water(x * FACTOR * 8, y * FACTOR * 8);
+                    map.emplace_back(std::make_unique<Water>(x * FACTOR * 8, y * FACTOR * 8));
                     break;
                 case 'G':
-                    obj = new Grass(x*FACTOR*8, y*FACTOR*8);
+                    //obj = new Grass(x * FACTOR * 8, y * FACTOR * 8);
+                    map.emplace_back(std::make_unique<Grass>(x * FACTOR * 8, y * FACTOR * 8));
                     break;
-
-
             }
-            map.emplace_back(obj);
             x++;
         }
         if (c == ' ')
             x++;
 
-        if (c == '\n')
-        {
+        if (c == '\n') {
             x = 0;
             y++;
         }
@@ -55,14 +54,12 @@ void Map :: loadMap(std::vector<IGameObject*>& map, int levelNum)
     file.close();
 }
 
-void Map :: update(std::vector<IGameObject*>& map)
-{
-    // здесь посетитель для вектора объектов
+void Map::update(std::vector<std::unique_ptr<IGameObject>> &map) {
 }
 
-void Map :: render (std::vector<IGameObject*>& map, sf::RenderWindow &window)
-{
-    for (auto object : map) {
-        object->render(window);
+void Map::render(std::vector<std::unique_ptr<IGameObject>> &map, sf::RenderWindow &window) {
+    for (const auto &gameObject : map) {
+        if (gameObject != nullptr)
+            gameObject->render(window);
     }
 }

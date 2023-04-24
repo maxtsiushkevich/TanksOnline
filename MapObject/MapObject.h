@@ -5,18 +5,16 @@
 
 extern float FACTOR;
 
-class MapObject : public IGameObject
-{
+class MapObject : public IGameObject {
 protected:
     bool isDestroyed;
 public:
-    MapObject(float x, float y) : IGameObject(x, y) { }
-    void setIsDestroyed() { isDestroyed = true; }
-    bool getIsDestroyed() { return isDestroyed; }
+    MapObject(float x, float y);
+    void setIsDestroyed();
+    bool getIsDestroyed();
 };
 
-class Brick : public MapObject
-{
+class Brick : public MapObject {
 public:
     Brick(float x, float y);
     void update(float time) override {};
@@ -24,8 +22,8 @@ public:
     void handleCollision(IVisitor *visitor) override;
 
 };
-class Metal : public MapObject
-{
+
+class Metal : public MapObject {
 public:
     Metal(float x, float y);
     void update(float time) override {};
@@ -33,8 +31,7 @@ public:
     void handleCollision(IVisitor *visitor) override;
 };
 
-class Water : public MapObject
-{
+class Water : public MapObject {
 public:
     Water(float x, float y);
     void update(float time) override {};
@@ -42,8 +39,7 @@ public:
     void handleCollision(IVisitor *visitor) override;
 };
 
-class Grass : public MapObject
-{
+class Grass : public MapObject {
 public:
     Grass(float x, float y);
     void update(float time) override {};
