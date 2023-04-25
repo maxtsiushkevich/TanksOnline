@@ -69,7 +69,7 @@ void Bullet::update(float time) {
     sprite.setPosition(dx, dy);
 }
 
-bool Bullet::getIsDestroyed() const {
+bool Bullet::getIsDestroyed() const { 
     return isDestroyed;
 }
 

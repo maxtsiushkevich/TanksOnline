@@ -13,8 +13,6 @@ void GameEngine::init() {
     levelNum = 1;
     Map::loadMap(map, levelNum);
 
-    //playerTank = new PlayerTank(64 * FACTOR, 192 * FACTOR, allBullets);
-
     // рандомно заполняем вектор с танками врага
 
     playerTank = std::make_unique<PlayerTank>(64 * FACTOR, 192 * FACTOR, allBullets);
@@ -58,57 +56,56 @@ void GameEngine::update()
         clock.restart();
 }
 
-void GameEngine::handleCollisions()
-{
-   /*
-   std::vector<IGameObject *> allObjects;
-    allObjects.reserve(1 + map.size() + enemyTanks.size() + allBullets.size());
+void GameEngine::handleCollisions() {
 
-    allObjects.emplace_back(playerTank);
-    allObjects.insert(allObjects.end(), enemyTanks.begin(), enemyTanks.end());
-    allObjects.insert(allObjects.end(), allBullets.begin(), allBullets.end());
+    /*std::vector<IGameObject *> allObjects;
+     allObjects.reserve(1 + map.size() + enemyTanks.size() + allBullets.size());
 
-    IVisitor *visitor;
+     allObjects.emplace_back(playerTank);
+     allObjects.insert(allObjects.end(), enemyTanks.begin(), enemyTanks.end());
+     allObjects.insert(allObjects.end(), allBullets.begin(), allBullets.end());
 
-    for (auto object: allObjects)
-    {
+     IVisitor *visitor;
 
-        // проверка с танком игрока
-        if (object->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds()) &&
-            object != playerTank) {
-            visitor = new CollisionWithTankVisitor();
-            object->handleCollision(visitor);
-            delete visitor;
-        }
+     for (auto object: allObjects)
+     {
 
-        for (auto enemy: enemyTanks) {
-            if (object->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) &&
-                object != enemy) {
-                visitor = new CollisionWithTankVisitor();
-                object->handleCollision(visitor);
-                delete visitor;
-            }
+         // проверка с танком игрока
+         if (object->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds()) &&
+             object != playerTank) {
+             visitor = new CollisionWithTankVisitor();
+             object->handleCollision(visitor);
+             delete visitor;
+         }
 
-        }
+         for (auto enemy: enemyTanks) {
+             if (object->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) &&
+                 object != enemy) {
+                 visitor = new CollisionWithTankVisitor();
+                 object->handleCollision(visitor);
+                 delete visitor;
+             }
 
-        for (auto bullet: allBullets) {
-            if (object->getSprite().getGlobalBounds().intersects(bullet->getSprite().getGlobalBounds()) &&
-                object != bullet) {
-                visitor = new CollisionWithBulletVisitor();
-                object->handleCollision(visitor);
-                delete visitor;
-            }
-        }
+         }
 
-        for (auto mapObject: map) {
-            if (object->getSprite().getGlobalBounds().intersects(mapObject->getSprite().getGlobalBounds()) &&
-                object != mapObject) {
-                visitor = new CollisionWithMapObjectVisitor();
-                object->handleCollision(visitor);
-                delete visitor;
-            }
-        }
-    } */
+         for (auto bullet: allBullets) {
+             if (object->getSprite().getGlobalBounds().intersects(bullet->getSprite().getGlobalBounds()) &&
+                 object != bullet) {
+                 visitor = new CollisionWithBulletVisitor();
+                 object->handleCollision(visitor);
+                 delete visitor;
+             }
+         }
+
+         for (auto mapObject: map) {
+             if (object->getSprite().getGlobalBounds().intersects(mapObject->getSprite().getGlobalBounds()) &&
+                 object != mapObject) {
+                 visitor = new CollisionWithMapObjectVisitor();
+                 object->handleCollision(visitor);
+                 delete visitor;
+             }
+         }
+     } */
 }
 
 void GameEngine::render()
