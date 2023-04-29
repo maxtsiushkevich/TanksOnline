@@ -4,7 +4,7 @@
 
 #include "MapObject/MapObject.h"
 
-float FACTOR = 5.f;
+double FACTOR = 5.f;
 
 int main() {
     sf::RenderWindow window;
@@ -24,9 +24,8 @@ int main() {
                 engine.togglePause();
         }
 
+        //window.clear(sf::Color::White);
         window.clear();
-
-
 
         engine.update();
         engine.handleCollisions();

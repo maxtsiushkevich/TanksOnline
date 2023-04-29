@@ -1,32 +1,25 @@
 #include "MapObject.h"
 
-MapObject :: MapObject(float x, float y) : IGameObject(x, y)
+MapObject :: MapObject(double x, double y) : IGameObject(x, y)
 {
     sprite.setPosition(x, y);
     sprite.setScale(FACTOR, FACTOR);
 }
 
-void MapObject :: setIsDestroyed() {
-    isDestroyed = true;
-}
-
-bool MapObject :: getIsDestroyed() {
-    return isDestroyed;
-}
-
-Brick::Brick(float x, float y) : MapObject(x, y) {
+Brick::Brick(double x, double y) : MapObject(x, y) {
     sprite.setTextureRect(sf::IntRect(256, 64, 8, 8));
 }
 
-Metal::Metal(float x, float y) : MapObject(x, y) {
+Metal::Metal(double x, double y) : MapObject(x, y) {
+    //isBulletPowerful = false;
     sprite.setTextureRect(sf::IntRect(256, 72, 8, 8));
 }
 
-Water::Water(float x, float y) : MapObject(x, y) {
+Water::Water(double x, double y) : MapObject(x, y) {
     sprite.setTextureRect(sf::IntRect(256, 80, 8, 8));
 }
 
-Grass::Grass(float x, float y) : MapObject(x, y) {
+Grass::Grass(double x, double y) : MapObject(x, y) {
     sprite.setTextureRect(sf::IntRect(264, 72, 8, 8));
 }
 
@@ -48,17 +41,17 @@ void Grass::render(sf::RenderWindow &window) {
 
 
 void Brick::handleCollision(IVisitor *visitor) {
-    //visitor->visit(*this);
+    visitor->visit(*this);
 }
 
 void Metal::handleCollision(IVisitor *visitor) {
-    //visitor->visit(*this);
+    visitor->visit(*this);
 }
 
 void Water::handleCollision(IVisitor *visitor) {
-    //visitor->visit(*this);
+    visitor->visit(*this);
 }
 
 void Grass::handleCollision(IVisitor *visitor) {
-    //visitor->visit(*this);
+      visitor->visit(*this);
 }

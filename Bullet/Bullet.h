@@ -3,20 +3,18 @@
 
 #include "../IGameObject/IGameObject.h"
 
-extern float FACTOR;
+extern double FACTOR;
 
 class Bullet : public IGameObject {
 protected:
-    float speed;
-    bool isDestroyed;
+    double speed;
     IGameObject *owner;
     Destination bulletDestination;
 public:
-    Bullet(float x, float y, float speed, Destination dest, IGameObject *owner);
+    Bullet(double x, double y, double speed, Destination dest, IGameObject *owner);
     ~Bullet() override = default;
-    void update(float time) override;
+    void update(double time) override;
     void render(sf::RenderWindow &window) override;
-    bool getIsDestroyed() const;
     bool checkBounds();
     IGameObject* getOwner() const;
 };
@@ -24,7 +22,7 @@ public:
 class PlayerBullet : public Bullet // пуля игрока
 {
 public:
-    PlayerBullet(float x, float y, Destination dest, IGameObject *owner) : Bullet(x, y, 110.f, dest, owner) {}
+    PlayerBullet(double x, double y, Destination dest, IGameObject *owner) : Bullet(x, y, 110.f, dest, owner) {}
 
     void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
@@ -33,7 +31,7 @@ public:
 
 class PlayerFastBullet : public Bullet {
 public:
-    PlayerFastBullet(float x, float y, Destination dest, IGameObject *owner) : Bullet(x, y, 220.f, dest, owner) {}
+    PlayerFastBullet(double x, double y, Destination dest, IGameObject *owner) : Bullet(x, y, 220.f, dest, owner) {}
 
     void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
@@ -42,7 +40,7 @@ public:
 
 class PlayerPowerfulBullet : public Bullet {
 public:
-    PlayerPowerfulBullet(float x, float y, Destination dest, IGameObject *owner) : Bullet(x, y, 110.f, dest, owner) {}
+    PlayerPowerfulBullet(double x, double y, Destination dest, IGameObject *owner) : Bullet(x, y, 110.f, dest, owner) {}
 
     void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
@@ -52,17 +50,17 @@ public:
 class EnemyBullet : public Bullet // пуля врага
 {
 public:
-    EnemyBullet(float x, float y, Destination dest, IGameObject *owner) : Bullet(x, y, 110.f, dest, owner) {}
+    EnemyBullet(double x, double y, Destination dest, IGameObject *owner) : Bullet(x, y, 110.f, dest, owner) {}
 
     void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
     }
 };
 
-class EnemySpeedBullet : public Bullet // пуля врага
+class EnemyFastBullet : public Bullet // пуля врага
 {
 public:
-    EnemySpeedBullet(float x, float y, Destination dest, IGameObject *owner) : Bullet(x, y, 220.f, dest, owner) {}
+    EnemyFastBullet(double x, double y, Destination dest, IGameObject *owner) : Bullet(x, y, 220.f, dest, owner) {}
 
     void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);

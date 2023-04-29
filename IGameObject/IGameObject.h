@@ -11,18 +11,21 @@ enum Destination {
     RIGHT
 };
 
+
 class IGameObject {
 protected:
-
+    bool isDestroyed;
     sf::Sprite sprite;
-    float dx, dy;
+    double dx, dy;
 public:
-    IGameObject(float x, float y);
+    IGameObject(double x, double y);
     static sf::Texture texture;
     virtual ~IGameObject() = default;
-    virtual void update(float time) = 0;
+    virtual void update(double time) = 0;
     virtual void render(sf::RenderWindow &window) = 0;
     virtual void handleCollision(IVisitor *visitor) = 0;
+    bool getIsDestroyed();
+    void setIsDestroyed();
     sf::Sprite &getSprite();
 };
 

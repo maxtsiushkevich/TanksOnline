@@ -4,20 +4,24 @@
 #include <SFML/Graphics.hpp>
 #include "../IGameObject/IGameObject.h"
 
-extern float FACTOR;
+extern double FACTOR;
 
 class GameEngine {
 private:
     sf::RenderWindow &window;
     sf::Texture mainTexture;
 
-    std::unique_ptr<IGameObject> playerTank;
+    std::shared_ptr<IGameObject> playerTank;
 
-    std::vector<std::unique_ptr<IGameObject>> map;
+    std::vector<std::shared_ptr<IGameObject>> map;
 
-    std::vector<std::unique_ptr<IGameObject>> allBullets;
+    std::vector<std::shared_ptr<IGameObject>> allBullets;
 
-    std::vector<std::unique_ptr<IGameObject>> enemyTanks;
+    std::vector<std::shared_ptr<IGameObject>> enemyTanks;
+
+    sf::Sprite hud;
+
+    int points;
 
     bool isPaused;
     sf::Clock clock;
@@ -27,10 +31,12 @@ public:
     GameEngine(sf::RenderWindow &window) : window(window) {}
     ~GameEngine() = default;
     void init();
+    void initEnemies();
     void update();
     void handleCollisions();
     void togglePause();
     void render();
+    void drawHUD();
     void end();
 };
 

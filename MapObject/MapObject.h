@@ -3,46 +3,44 @@
 
 #include "../IGameObject/IGameObject.h"
 
-extern float FACTOR;
+extern double FACTOR;
 
 class MapObject : public IGameObject {
 protected:
-    bool isDestroyed;
 public:
-    MapObject(float x, float y);
-    void setIsDestroyed();
-    bool getIsDestroyed();
+    MapObject(double x, double y);
 };
 
 class Brick : public MapObject {
 public:
-    Brick(float x, float y);
-    void update(float time) override {};
+    Brick(double x, double y);
+    void update(double time) override {};
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
 
 };
 
 class Metal : public MapObject {
+protected:
 public:
-    Metal(float x, float y);
-    void update(float time) override {};
+    Metal(double x, double y);
+    void update(double time) override {};
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
 };
 
 class Water : public MapObject {
 public:
-    Water(float x, float y);
-    void update(float time) override {};
+    Water(double x, double y);
+    void update(double time) override {};
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
 };
 
 class Grass : public MapObject {
 public:
-    Grass(float x, float y);
-    void update(float time) override {};
+    Grass(double x, double y);
+    void update(double time) override {};
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
 };

@@ -1,34 +1,32 @@
 #include "Bullet.h"
 
-Bullet::Bullet(float x, float y, float speed, Destination dest, IGameObject *owner) : IGameObject(x, y), bulletDestination(dest), owner(owner) {
+Bullet::Bullet(double x, double y, double speed, Destination dest, IGameObject *owner) : IGameObject(x, y), bulletDestination(dest), owner(owner) {
     this->speed = speed * FACTOR;
 
     switch (bulletDestination) {
         case UP:
-            dx = x + 4.f * FACTOR;
-            dy = y - 8.f * FACTOR;
-            sprite.setTextureRect(sf::IntRect(321, 100, 8, 8));
+            dx = x + 5.f * FACTOR;
+            dy = y - 6.f * FACTOR;
+            sprite.setTextureRect(sf::IntRect(322, 101, 5, 6));
             break;
         case DOWN:
-            dx = x + 4.f * FACTOR;
-            dy = y + 16.f * FACTOR;
-            sprite.setTextureRect(sf::IntRect(337, 100, 8, 8));
+            dx = x + 5.f * FACTOR; ////
+            dy = y + 15.f * FACTOR;
+            sprite.setTextureRect(sf::IntRect(338, 101, 5, 6));
             break;
         case LEFT:
-            dx = x - 8.f * FACTOR;
-            dy = y + 4.f * FACTOR;
-            sprite.setTextureRect(sf::IntRect(329, 100, 8, 8));
+            dx = x - 6.f * FACTOR;
+            dy = y + 5.f * FACTOR;
+            sprite.setTextureRect(sf::IntRect(329, 101, 6, 5));
             break;
         case RIGHT:
-            dx = x + 16.f * FACTOR;
-            dy = y + 4.f * FACTOR;
-            sprite.setTextureRect(sf::IntRect(345, 100, 8, 8));
+            dx = x + 15.f * FACTOR;
+            dy = y + 5.f * FACTOR; /////
+            sprite.setTextureRect(sf::IntRect(345, 101, 6, 5));
             break;
     }
     sprite.setPosition(dx, dy);
     sprite.setScale(FACTOR, FACTOR);
-
-    isDestroyed = false;
 }
 
 bool Bullet::checkBounds() {
@@ -42,8 +40,8 @@ bool Bullet::checkBounds() {
 
 }
 
-void Bullet::update(float time) {
-    float distance = speed * time;
+void Bullet::update(double time) {
+    double distance = speed * time;
 
     if (checkBounds())
         return;
@@ -67,10 +65,6 @@ void Bullet::update(float time) {
             break;
     }
     sprite.setPosition(dx, dy);
-}
-
-bool Bullet::getIsDestroyed() const { 
-    return isDestroyed;
 }
 
 void Bullet::render(sf::RenderWindow &window) {

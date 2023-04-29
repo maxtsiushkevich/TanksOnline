@@ -7,9 +7,9 @@ class Map {
 public:
     Map() = default;
     ~Map() = default;
-    static void loadMap(std::vector<std::unique_ptr<IGameObject>> &map, int levelNum);
-    static void update(std::vector<std::unique_ptr<IGameObject>> &map);
-    static void render(std::vector<std::unique_ptr<IGameObject>> &map, sf::RenderWindow &window);
+    static void loadMap(std::vector<std::shared_ptr<IGameObject>> &map, int levelNum);
+    static void update(std::vector<std::shared_ptr<IGameObject>> &map);
+    static void render(std::vector<std::shared_ptr<IGameObject>> &map, sf::RenderWindow &window);
 };
 
 
