@@ -11,21 +11,21 @@ enum Destination {
     RIGHT
 };
 
-
-class IGameObject {
+class IGameObject : public std::enable_shared_from_this<IGameObject>
+{
 protected:
     bool isDestroyed;
     sf::Sprite sprite;
-    double dx, dy;
+    float dx, dy;
 public:
-    IGameObject(double x, double y);
+    IGameObject(float x, float y);
     static sf::Texture texture;
     virtual ~IGameObject() = default;
-    virtual void update(double time) = 0;
+    virtual void update(float time) = 0;
     virtual void render(sf::RenderWindow &window) = 0;
     virtual void handleCollision(IVisitor *visitor) = 0;
     bool getIsDestroyed();
-    void setIsDestroyed();
+    virtual void setIsDestroyed();
     sf::Sprite &getSprite();
 };
 

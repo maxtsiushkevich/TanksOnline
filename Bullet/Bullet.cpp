@@ -1,6 +1,9 @@
 #include "Bullet.h"
 
-Bullet::Bullet(double x, double y, double speed, Destination dest, IGameObject *owner) : IGameObject(x, y), bulletDestination(dest), owner(owner) {
+#include <iostream>
+
+Bullet::Bullet(float x, float y, float speed, Destination dest, std::shared_ptr<IGameObject> owner) : IGameObject(x, y), bulletDestination(dest), owner(std::move(owner))
+{
     this->speed = speed * FACTOR;
 
     switch (bulletDestination) {
@@ -40,8 +43,8 @@ bool Bullet::checkBounds() {
 
 }
 
-void Bullet::update(double time) {
-    double distance = speed * time;
+void Bullet::update(float time) {
+    float distance = speed * time;
 
     if (checkBounds())
         return;
@@ -71,6 +74,14 @@ void Bullet::render(sf::RenderWindow &window) {
     window.draw(sprite);
 }
 
-IGameObject* Bullet :: getOwner() const {
+std::shared_ptr<IGameObject> Bullet :: getOwner() const
+{
     return owner;
+}
+
+void Bullet ::setIsDestroyed()
+{
+    isDestroyed = true;
+    ///std::cout << "dadada" << std::endl;
+    ///owner = nullptr;
 }

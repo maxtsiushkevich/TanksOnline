@@ -1,28 +1,35 @@
 #ifndef GAME_BULLET_H
 #define GAME_BULLET_H
 
-#include "../IGameObject/IGameObject.h"
+#define PLAYER_BULLET_SPEED 110.f
+#define PLAYER_FAST_BULLET_SPEED 220.f
+#define ENEMY_BULLET_SPEED 90.f
+#define ENEMY_FAST_BULLET_SPEED 180.f
 
-extern double FACTOR;
+#include "../IGameObject/IGameObject.h"
+#include "../Tank/Tank.h"
 
 class Bullet : public IGameObject {
 protected:
-    double speed;
-    IGameObject *owner;
+    float speed;
+
+   std::shared_ptr<IGameObject> owner;
+
     Destination bulletDestination;
 public:
-    Bullet(double x, double y, double speed, Destination dest, IGameObject *owner);
+    Bullet(float x, float y, float speed, Destination dest, std::shared_ptr<IGameObject> owner);
     ~Bullet() override = default;
-    void update(double time) override;
+    void update(float time) override;
     void render(sf::RenderWindow &window) override;
     bool checkBounds();
-    IGameObject* getOwner() const;
+    void setIsDestroyed() override;
+    std::shared_ptr<IGameObject> getOwner() const;
 };
 
 class PlayerBullet : public Bullet // пуля игрока
 {
 public:
-    PlayerBullet(double x, double y, Destination dest, IGameObject *owner) : Bullet(x, y, 110.f, dest, owner) {}
+    PlayerBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner) : Bullet(x, y, PLAYER_BULLET_SPEED, dest, std::move(owner)) {}
 
     void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
@@ -31,7 +38,7 @@ public:
 
 class PlayerFastBullet : public Bullet {
 public:
-    PlayerFastBullet(double x, double y, Destination dest, IGameObject *owner) : Bullet(x, y, 220.f, dest, owner) {}
+    PlayerFastBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner) : Bullet(x, y, PLAYER_FAST_BULLET_SPEED, dest, std::move(owner)) {}
 
     void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
@@ -40,7 +47,7 @@ public:
 
 class PlayerPowerfulBullet : public Bullet {
 public:
-    PlayerPowerfulBullet(double x, double y, Destination dest, IGameObject *owner) : Bullet(x, y, 110.f, dest, owner) {}
+    PlayerPowerfulBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner) : Bullet(x, y, PLAYER_BULLET_SPEED, dest, std::move(owner)) {}
 
     void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
@@ -50,7 +57,7 @@ public:
 class EnemyBullet : public Bullet // пуля врага
 {
 public:
-    EnemyBullet(double x, double y, Destination dest, IGameObject *owner) : Bullet(x, y, 110.f, dest, owner) {}
+    EnemyBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner) : Bullet(x, y, ENEMY_BULLET_SPEED, dest, std::move(owner)) {}
 
     void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);
@@ -60,7 +67,7 @@ public:
 class EnemyFastBullet : public Bullet // пуля врага
 {
 public:
-    EnemyFastBullet(double x, double y, Destination dest, IGameObject *owner) : Bullet(x, y, 220.f, dest, owner) {}
+    EnemyFastBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner) : Bullet(x, y, ENEMY_FAST_BULLET_SPEED, dest, std::move(owner)) {}
 
     void handleCollision(IVisitor *visitor) override {
         visitor->visit(*this);

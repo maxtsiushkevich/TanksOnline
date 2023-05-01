@@ -4,18 +4,20 @@
 
 #include "MapObject/MapObject.h"
 
-double FACTOR = 5.f;
+float FACTOR = 5.f;
 
-int main() {
+int main()
+{
     sf::RenderWindow window;
     window.create(sf::VideoMode(208. * FACTOR + 32. * FACTOR, 208. * FACTOR), "Tanks Online",
                   sf::Style::Close | sf::Style::Titlebar);
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(45);
 
     GameEngine engine(window);
     engine.init();
 
-    while (window.isOpen()) {
+    while (window.isOpen())
+    {
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
@@ -29,7 +31,6 @@ int main() {
 
         engine.update();
         engine.handleCollisions();
-
         engine.render();
 
         window.display();

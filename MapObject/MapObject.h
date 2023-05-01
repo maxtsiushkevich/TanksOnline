@@ -3,18 +3,18 @@
 
 #include "../IGameObject/IGameObject.h"
 
-extern double FACTOR;
+extern float FACTOR;
 
 class MapObject : public IGameObject {
 protected:
 public:
-    MapObject(double x, double y);
+    MapObject(float x, float y);
 };
 
 class Brick : public MapObject {
 public:
-    Brick(double x, double y);
-    void update(double time) override {};
+    Brick(float x, float y);
+    void update(float time) override {};
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
 
@@ -23,48 +23,39 @@ public:
 class Metal : public MapObject {
 protected:
 public:
-    Metal(double x, double y);
-    void update(double time) override {};
+    Metal(float x, float y);
+    void update(float time) override {};
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
 };
 
 class Water : public MapObject {
 public:
-    Water(double x, double y);
-    void update(double time) override {};
+    Water(float x, float y);
+    void update(float time) override {};
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
 };
 
 class Grass : public MapObject {
 public:
-    Grass(double x, double y);
-    void update(double time) override {};
+    Grass(float x, float y);
+    void update(float time) override {};
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
 };
 
-//class Eagle : public IGameObject
-//{
-//protected:
-//    Eagle(float x, float y) : IGameObject(x, y)
-//    {
-//        //sprite.setTextureRect(sf::IntRect(0, 16, 16, 16));
-//        sprite.setPosition(x, y);
-//        sprite.setScale(FACTOR, FACTOR);
-//    }
-//};
-//
-//class Flag : public IGameObject
-//{
-//protected:
-//    Flag(float x, float y) : IGameObject(x, y)
-//    {
-//        //sprite.setTextureRect(sf::IntRect(0, 16, 16, 16));
-//        sprite.setPosition(x, y);
-//        sprite.setScale(FACTOR, FACTOR);
-//    }
-//};
+class Eagle : public MapObject
+{
+protected:
+    bool isFallen;
+public:
+    Eagle(float x, float y);
+    void update(float time) override {};
+    void render(sf::RenderWindow &window) override;
+    void handleCollision(IVisitor *visitor) override;
+    void setIsFallen();
+    bool getIsFallen() { return isFallen; }
+};
 
 #endif //GAME_MAPOBJECT_H

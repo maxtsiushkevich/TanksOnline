@@ -1,6 +1,5 @@
 #include "Tank.h"
 #include "../Bullet/Bullet.h"
-#include <iostream>
 
 #include <random>
 #include <chrono>
@@ -8,10 +7,14 @@
 #define TANK_SPEED 45.f
 #define ENEMY_TANK_SPEED 35.f
 #define CARRIER_SPEED 90.f
+#define INVULNERABLE_TIME 5.f
+#define DELAY_BEFORE_SHOOT 1.f
 
-Tank::Tank(double x, double y, double speed, int health, std::vector<std::shared_ptr<IGameObject>> &allBullets)
+Tank::Tank(float x, float y, float speed, int health, std::vector<std::shared_ptr<IGameObject>> &allBullets)
         : IGameObject(x, y), health(health),
-          allBullets(allBullets) {
+          allBullets(allBullets)
+{
+    time = 0;
     animation = 0;
     tankDestination = UP;
     this->speed = speed * FACTOR;
@@ -22,22 +25,19 @@ void Tank::enableShooting() {
     canShoot = true;
 }
 
-bool Tank::isShootingEnable() const {
-    return canShoot;
-}
-
-Destination Tank::getDestination() {
-    return tankDestination;
-}
-
-void Tank::render(sf::RenderWindow &window) {
+void Tank::render(sf::RenderWindow &window)
+{
     window.draw(sprite);
 }
 
-PlayerTank::PlayerTank(double x, double y, std::vector<std::shared_ptr<IGameObject>> &allBullets) : Tank(x, y,
+PlayerTank::PlayerTank(float x, float y, std::vector<std::shared_ptr<IGameObject>> &allBullets) : Tank(x, y,
                                                                                                          TANK_SPEED, 3,
                                                                                                          allBullets),
-                                                                                                    stars(0) {
+                                                                                                         stars(0)
+{
+    previousButton = UP;
+    invulnerableTime.restart();
+    isInvulnerable = true;
     isSpacePressed = false;
     sprite.setTextureRect(sf::IntRect(0, 16 * stars, 16, 16));
     sprite.setPosition(x, y);
@@ -45,6 +45,8 @@ PlayerTank::PlayerTank(double x, double y, std::vector<std::shared_ptr<IGameObje
 }
 
 void PlayerTank::reset() {
+    isInvulnerable = true;
+    invulnerableTime.restart();
     health--;
     if (health == 0)
         isDestroyed = true;
@@ -60,9 +62,28 @@ void PlayerTank::reset() {
     isSpacePressed = false;
 }
 
-void PlayerTank::update(double time) {
+void PlayerTank :: render(sf::RenderWindow &window)
+{
+    window.draw(sprite);
+    if (isInvulnerable)
+    {
+        if (animation == 2) // обработка движения
+            animation = 0;
+        sf::Sprite effect;
+        effect.setTexture(texture);
+        effect.setTextureRect(sf::IntRect(256 +(16*animation), 144, 16, 16));
+        effect.setPosition(dx, dy);
+        effect.setScale(FACTOR, FACTOR);
+        window.draw(effect);
+    }
+}
+
+void PlayerTank::update(float time)
+{
+    if (invulnerableTime.getElapsedTime().asSeconds() > INVULNERABLE_TIME)
+        isInvulnerable = false;
     this->time = time;
-    double distance = speed * time;
+    float distance = speed * time;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && canShoot && !isSpacePressed) {
         this->shoot();
         isSpacePressed = true;
@@ -77,15 +98,15 @@ void PlayerTank::update(double time) {
 void PlayerTank::shoot() {
     switch (stars) {
         case 0:
-            bullet = std::make_shared<PlayerBullet>(dx, dy, tankDestination, this);
+            bullet = std::make_shared<PlayerBullet>(dx, dy, tankDestination, shared_from_this());
             break;
         case 1:
-            bullet = std::make_shared<PlayerFastBullet>(dx, dy, tankDestination, this);
+            bullet = std::make_shared<PlayerFastBullet>(dx, dy, tankDestination, shared_from_this());
             break;
         case 2:
             // очередь
         case 3:
-            bullet = std::make_shared<PlayerPowerfulBullet>(dx, dy, tankDestination, this);
+            bullet = std::make_shared<PlayerPowerfulBullet>(dx, dy, tankDestination, shared_from_this());
             break;
     }
 
@@ -100,7 +121,8 @@ void PlayerTank::handleCollision(IVisitor *visitor) {
     visitor->visit(*this);
 }
 
-void PlayerTank::move(double distance) {
+void PlayerTank::move(float distance)
+{
     if (animation == 2) // обработка движения
         animation = 0;
 
@@ -174,10 +196,12 @@ void PlayerTank::addStar() {
     stars = (stars == 3) ? stars : stars++;
 }
 
-EnemyTank::EnemyTank(double x, double y, std::vector<std::shared_ptr<IGameObject>> &allBullets, int type) : Tank(x, y,
+EnemyTank::EnemyTank(float x, float y, std::vector<std::shared_ptr<IGameObject>> &allBullets, int type, bool isBonusTank) : Tank(x, y,
                                                                                                                  ENEMY_TANK_SPEED,
                                                                                                                  1,
-                                                                                                                 allBullets) {
+                                                                                                                 allBullets)
+{
+    this->isBonusTank = isBonusTank;
     isCollidingWithMap = true;
     this->type = static_cast<EnemyType>(type);
     if (this->type == EnemyCarrier)
@@ -190,21 +214,22 @@ EnemyTank::EnemyTank(double x, double y, std::vector<std::shared_ptr<IGameObject
     sprite.setScale(FACTOR, FACTOR);
 }
 
-void EnemyTank::update(double time) {
+void EnemyTank::update(float time) {
     this->time = time;
-    double distance = speed * time;
-    if (canShoot) {
-        std::cout << "пиу пиу" << std::endl;
+    float distance = speed * time;
+    if (canShoot && (delayBeforeShoot.getElapsedTime().asSeconds() > DELAY_BEFORE_SHOOT))
+    {
         this->shoot();
     }
 
     this->move(distance);
 }
 
-void EnemyTank::shoot() {
+void EnemyTank::shoot()
+{
     if (type != EnemyShootingTank)
-        bullet = std::make_shared<EnemyBullet>(dx, dy, tankDestination, this);
-    else bullet = std::make_shared<EnemyFastBullet>(dx, dy, tankDestination, this);
+        bullet = std::make_shared<EnemyBullet>(dx, dy, tankDestination, shared_from_this());
+    else bullet = std::make_shared<EnemyFastBullet>(dx, dy, tankDestination, shared_from_this());
 
     if (bullet) {
         allBullets.emplace_back(std::move(bullet));
@@ -212,7 +237,7 @@ void EnemyTank::shoot() {
     }
 }
 
-void EnemyTank::move(double distance)
+void EnemyTank::move(float distance)
 {
 //    if (animation == 2) // обработка движения
 //        animation = 0;
@@ -289,6 +314,12 @@ void EnemyTank::decrementHealth() {
         isDestroyed = true;
 }
 
-void EnemyTank::handleCollision(IVisitor *visitor) {
+void EnemyTank :: handleCollision(IVisitor *visitor) {
     visitor->visit(*this);
+}
+
+void EnemyTank ::enableShooting()
+{
+    delayBeforeShoot.restart();
+    canShoot = true;
 }

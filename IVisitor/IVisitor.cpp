@@ -3,17 +3,18 @@
 #include "../Tank/Tank.h"
 #include "../Bullet/Bullet.h"
 #include "../MapObject/MapObject.h"
+#include "../Bonus/Bonus.h"
 
 void CollisionWithTankVisitor::visit(PlayerTank &tank)
 {
-    double distance = tank.getTime() * tank.getSpeed();
+    float distance = tank.getTime() * tank.getSpeed();
     tank.decrementAnimation();
     tank.move(-distance);
 }
 
 void CollisionWithTankVisitor :: visit(EnemyTank &tank)
 {
-    double distance = tank.getTime() * tank.getSpeed();
+    float distance = tank.getTime() * tank.getSpeed();
     tank.decrementAnimation();
     tank.move(-distance);
 }
@@ -43,10 +44,15 @@ void CollisionWithTankVisitor::visit(EnemyFastBullet &bullet)
     bullet.setIsDestroyed();
 }
 
+void CollisionWithTankVisitor :: visit(Bonus &bonus)
+{
+    bonus.setIsPicked();
+}
 
 void CollisionWithBulletVisitor::visit(PlayerTank &tank) // столкновение танка с пулей, вражеские помечаются как удаленные
 {
-    tank.reset();
+    if (!tank.getIsInvulnerable())
+        tank.reset();
 }
 
 void CollisionWithBulletVisitor::visit(EnemyTank &tank)
@@ -96,16 +102,21 @@ void CollisionWithBulletVisitor::visit(Grass &object)
 {
 }
 
+void CollisionWithBulletVisitor::visit(Eagle &object)
+{
+    object.setIsFallen();
+}
+
 void CollisionWithMapObjectVisitor::visit(PlayerTank &tank)
 {
-    double distance = tank.getTime() * tank.getSpeed();
+    float distance = tank.getTime() * tank.getSpeed();
     tank.decrementAnimation();
     tank.move(-distance);
 }
 
 void CollisionWithMapObjectVisitor::visit(EnemyTank &tank) // надо отодвинуть танк
 {
-    double distance = tank.getTime() * tank.getSpeed();
+    float distance = tank.getTime() * tank.getSpeed();
     tank.decrementAnimation();
     tank.move(-distance);
 }

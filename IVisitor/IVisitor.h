@@ -15,6 +15,9 @@ class Brick;
 class Metal;
 class Water;
 class Grass;
+class Eagle;
+
+class Bonus;
 
 class IVisitor {
 public:
@@ -31,6 +34,10 @@ public:
     virtual void visit(Metal &object) = 0;
     virtual void visit(Water &object) = 0;
     virtual void visit(Grass &object) = 0;
+    virtual void visit(Eagle &object) = 0;
+
+    virtual void visit(Bonus &bonus) = 0;
+
     virtual ~IVisitor() = default;
 };
 
@@ -38,9 +45,6 @@ class CollisionWithTankVisitor : public IVisitor {
 public:
     void visit(PlayerTank &tank) override;
     void visit(EnemyTank &tank) override;
-    //{
-
-    //}
 
     void visit(PlayerBullet &bullet) override;
     void visit(PlayerFastBullet &bullet) override;
@@ -52,6 +56,9 @@ public:
     void visit(Metal &object) override {};
     void visit(Water &object) override {};
     void visit(Grass &object) override {};
+    void visit(Eagle &object) override {};
+
+    void visit(Bonus &bonus) override;
 };
 
 class CollisionWithBulletVisitor : public IVisitor {
@@ -68,6 +75,10 @@ class CollisionWithBulletVisitor : public IVisitor {
     void visit(Metal &object) override;
     void visit(Water &object) override;
     void visit(Grass &object) override;
+    void visit(Eagle &object) override;
+
+    void visit(Bonus &object) override {};
+
 };
 
 class CollisionWithMapObjectVisitor : public IVisitor
@@ -85,6 +96,9 @@ class CollisionWithMapObjectVisitor : public IVisitor
     void visit(Metal &object) override {};
     void visit(Water &object) override {};
     void visit(Grass &object) override {};
+    void visit(Eagle &object) override {};
+
+    void visit(Bonus &bonus) override {};
 };
 
 // collision with bonuses
