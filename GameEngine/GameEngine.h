@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "../IGameObject/IGameObject.h"
+#include <memory>
 
 extern float FACTOR;
 

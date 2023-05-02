@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include "../IVisitor/IVisitor.h"
 
+#include <memory>
+
 enum Destination {
     UP,
     LEFT,

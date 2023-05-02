@@ -1,5 +1,6 @@
 #include "Tank.h"
 #include "../Bullet/Bullet.h"
+#include <cmath>
 
 PlayerTank::PlayerTank(float x, float y, std::vector<std::shared_ptr<IGameObject>> &allBullets) : Tank(x, y,
                                                                                                        TANK_SPEED, 3,

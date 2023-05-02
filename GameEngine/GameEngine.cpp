@@ -11,16 +11,20 @@
 #include <chrono>
 
 #define PLAYER_SPAWN_X 64
-#define PLAYER_SPAWN_Y 192
+#define PLAYER_SPAWN_Y 192  
 #define TIME_BETWEEN_RENDER_ENEMY_TANK 90
 #define MAX_LEVEL_NUM 30
 #define ENEMIES_ON_LEVEL 18
 
 #define BONUS_POINTS 500
 
-void GameEngine::init() {
+void GameEngine::init()
+{
+    isPaused = false;
     isFlagFallen = false;
     mainTexture.loadFromFile("SpriteList.png");
+
+    points = 0;
 
     IGameObject::texture = mainTexture;
 
@@ -50,9 +54,28 @@ void GameEngine::update() {
     {
         if (isFlagFallen) // еще какое-то окно гейм овер
         {
+//            sf::Sprite gameOverSprite(mainTexture);
+//            gameOverSprite.setTextureRect(sf::IntRect(288, 184, 32, 16));
+//            gameOverSprite.setPosition(85*FACTOR, 100*FACTOR);
+//            gameOverSprite.setScale(FACTOR, FACTOR);
+//            window.draw(gameOverSprite);
             sleep(3);
             clock.restart();
             restart();
+        }
+
+        if (remainingEnemies == 0 && enemiesOnMap == 0)
+        {
+            // показываем стату
+            levelNum++;
+            if (levelNum == MAX_LEVEL_NUM + 1)
+                levelNum = 1;
+            Map::loadMap(map, levelNum);
+            remainingEnemies = ENEMIES_ON_LEVEL;
+            enemiesOnMap = 0; // тут окно с очками за уровень
+            timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
+            bonus.reset();
+            return;
         }
 
         bonusEffect();
@@ -174,8 +197,7 @@ void GameEngine::handleCollisions() {
 
         for (const auto &enemy: enemyTanks) {
             if (obj->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) &&
-                obj.get() != enemy.get() && dynamic_cast<Tank *>(obj.get()))
-            {
+                obj.get() != enemy.get() && dynamic_cast<Tank *>(obj.get())) {
                 auto visitor = std::make_shared<CollisionWithTankVisitor>();
                 obj->handleCollision(visitor.get());
                 enemy->handleCollision(visitor.get());
@@ -252,8 +274,7 @@ void GameEngine::handleCollisions() {
     }
 
     if (bonus != nullptr) {
-        if (bonus->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds()))
-        {
+        if (bonus->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds())) {
             auto visitor = std::make_shared<CollisionWithTankVisitor>();
             bonus->handleCollision(visitor.get());
             //continue;
@@ -263,6 +284,15 @@ void GameEngine::handleCollisions() {
 
 void GameEngine::render()
 {
+    if (isPaused)
+    {
+        sf::Sprite pauseSprite(mainTexture);
+        pauseSprite.setTextureRect(sf::IntRect(288, 176, 40, 8));
+        pauseSprite.setPosition(88*FACTOR, 96*FACTOR);
+        pauseSprite.setScale(FACTOR, FACTOR);
+        window.draw(pauseSprite);
+    }
+
     for (auto &bullet: allBullets) {
         bullet->render(window);
     }
@@ -282,23 +312,43 @@ void GameEngine::render()
     }
     window.draw(hud);
 
-    if (isPaused) // рендерим полупрозрачный спрайт с надписью PAUSE
-    {}
+    renderHUD();
+
+
+
 }
 
 void GameEngine::renderHUD()
 {
+    std::vector<sf::Sprite> remEnem;
+    for (int i = 0; i < remainingEnemies / 2; i++)
+    {
+        for (int j = 0; j < 2; j++)
+        {
+            sf::Sprite littleTankSprite(mainTexture);
+            littleTankSprite.setTextureRect(sf::IntRect(320, 192, 8, 8));
+            littleTankSprite.setPosition((float)(216+j*8)*FACTOR, (float)(16+i*8)*FACTOR);  // задание координат клетки
+            littleTankSprite.setScale(FACTOR, FACTOR);
+            remEnem.push_back(littleTankSprite);
+        }
+    }
+    if (remainingEnemies % 2 == 1)
+    {
+        sf::Sprite littleTankSprite(mainTexture);
+        littleTankSprite.setTextureRect(sf::IntRect(320, 192, 8, 8));
+        littleTankSprite.setPosition(216*FACTOR, (float)(16+(remainingEnemies/2)*8)*FACTOR);
+        littleTankSprite.setScale(FACTOR, FACTOR);
+        remEnem.push_back(littleTankSprite);
+    }
+    for (const auto &sprite : remEnem)
+        window.draw(sprite);
 
-//    for (int i = 0; i < remainingEnemies; i++)
-//    {
-//        for (int j = 0; j < 2; j++)
-//        {
-//            sf::Sprite littleTankSprite(mainTexture);
-//            littleTankSprite.setTextureRect(sf::IntRect(320, 192, 8, 8));
-//            //littleTankSprite.setPosition(376, y);
-//            //littleTankSprite.setScale(FACTOR, FACTOR);
-//        }
-//    }
+    int tmpHealths = dynamic_cast<PlayerTank*>(playerTank.get())->getHealths();
+    sf::Sprite healthSprite(mainTexture);
+    healthSprite.setTextureRect(sf::IntRect(288+(8*tmpHealths), 200, 8, 8));
+    healthSprite.setPosition(224*FACTOR, 136*FACTOR);
+    healthSprite.setScale(FACTOR, FACTOR);
+    window.draw(healthSprite);
 }
 
 void GameEngine::restart() {
@@ -308,6 +358,7 @@ void GameEngine::restart() {
 
     playerTank = std::make_shared<PlayerTank>(PLAYER_SPAWN_X * FACTOR, PLAYER_SPAWN_Y * FACTOR, allBullets);
 
+    bonus.reset();
     remainingEnemies = 18;
     enemiesOnMap = 0;
     points = 0;
@@ -335,7 +386,7 @@ void GameEngine::bonusEffect() {
     if (bonus == nullptr)
         return;
 
-    auto *handlingBonus = dynamic_cast<Bonus*>(bonus.get());
+    auto *handlingBonus = dynamic_cast<Bonus *>(bonus.get());
 
     if (!(handlingBonus->getIsPicked()))
         return;
@@ -344,32 +395,25 @@ void GameEngine::bonusEffect() {
 
     if (handlingBonus->getBonusType() == HELMET)
         dynamic_cast<PlayerTank *>(playerTank.get())->setIsInvulnerable();
-    else if (handlingBonus->getBonusType() == CLOCK)
+    else if (handlingBonus->getBonusType() == CLOCK) {
+
+    } else if (handlingBonus->getBonusType() == SHOVEL) // устанавливает металл вокруг базы
     {
 
-    }
-    else if (handlingBonus->getBonusType() == SHOVEL) // устанавливает металл вокруг базы
-    {
-
-    }
-    else if (handlingBonus->getBonusType() == STAR)
+    } else if (handlingBonus->getBonusType() == STAR)
         dynamic_cast<PlayerTank *>(playerTank.get())->addStar();
-    else if (handlingBonus->getBonusType() == GRENADE)
-    {
+    else if (handlingBonus->getBonusType() == GRENADE) {
         enemiesOnMap = 0;
         enemyTanks.clear();
-    }
-    else if (handlingBonus->getBonusType() == TANK)
-    {
+    } else if (handlingBonus->getBonusType() == TANK) {
         dynamic_cast<PlayerTank *>(playerTank.get())->addHealth();
     }
     bonus.reset();
 }
 
-void GameEngine ::dropEnemies()
-{
+void GameEngine::dropEnemies() {
     timeBetweenRenderEnemyTank--;
-    if (remainingEnemies != 0 && enemiesOnMap < 4  && timeBetweenRenderEnemyTank <= 0) {
+    if (remainingEnemies != 0 && enemiesOnMap < 4 && timeBetweenRenderEnemyTank <= 0) {
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         std::default_random_engine generator(seed);
         std::uniform_int_distribution<int> distribution(0, 3);
@@ -383,8 +427,7 @@ void GameEngine ::dropEnemies()
             enemy = std::make_shared<EnemyTank>(6. * (remainingEnemies % 3) * 16. * FACTOR, 0., allBullets, type,
                                                 true);
             enemyWithBonusCounter = 0;
-        }
-        else
+        } else
             enemy = std::make_shared<EnemyTank>(6. * (remainingEnemies % 3) * 16. * FACTOR, 0., allBullets, type,
                                                 false);
 
@@ -393,17 +436,6 @@ void GameEngine ::dropEnemies()
         enemiesOnMap++;
 
         timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
-    }
-
-    if (remainingEnemies == 0 && enemiesOnMap == 0) {
-        levelNum++;
-        if (levelNum == MAX_LEVEL_NUM + 1)
-            levelNum = 1;
-        Map::loadMap(map, levelNum);
-        remainingEnemies = ENEMIES_ON_LEVEL;
-        enemiesOnMap = 0; // тут окно с очками за уровень
-        timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
-        return;
     }
 }
 
