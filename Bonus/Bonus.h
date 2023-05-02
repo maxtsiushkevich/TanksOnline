@@ -24,12 +24,12 @@ protected:
     bool isPicked;
 public:
     Bonus(float x, float y, int type);
-    bool getIsPicked() const { return isPicked; }
-    void setIsPicked() { isPicked = true; }
-    void update(float time) override { }
-    void render(sf::RenderWindow &window) override { window.draw(sprite); };
-    void handleCollision(IVisitor *visitor) override {  visitor->visit(*this); };
-    BonusType getBonusType() { return type; }
+    bool getIsPicked() const;
+    void setIsPicked();
+    void update(float time) override;
+    void render(sf::RenderWindow &window) override;
+    void handleCollision(IVisitor *visitor) override;
+    BonusType getBonusType();
 };
 
 

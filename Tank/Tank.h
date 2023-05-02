@@ -50,7 +50,7 @@ public:
 
 class PlayerTank : public Tank {
 protected:
-    int isInvulnerable;
+    bool isInvulnerable;
     Destination previousButton;
     bool isSpacePressed;
     int stars;
@@ -65,6 +65,8 @@ public:
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
     bool getIsInvulnerable() const { return isInvulnerable; }
+    void addHealth() { health++; }
+    void setIsInvulnerable();
 };
 
 class EnemyTank : public Tank

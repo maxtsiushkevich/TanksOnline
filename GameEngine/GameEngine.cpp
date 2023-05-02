@@ -14,6 +14,9 @@
 #define PLAYER_SPAWN_Y 192
 #define TIME_BETWEEN_RENDER_ENEMY_TANK 90
 #define MAX_LEVEL_NUM 30
+#define ENEMIES_ON_LEVEL 18
+
+#define BONUS_POINTS 500
 
 void GameEngine::init() {
     isFlagFallen = false;
@@ -28,7 +31,7 @@ void GameEngine::init() {
 
     playerTank = std::make_shared<PlayerTank>(PLAYER_SPAWN_X * FACTOR, PLAYER_SPAWN_Y * FACTOR, allBullets);
 
-    remainingEnemies = 18;
+    remainingEnemies = ENEMIES_ON_LEVEL;
     enemiesOnMap = 0;
 
     hud.setTexture(mainTexture);
@@ -45,8 +48,6 @@ void GameEngine::togglePause() {
 void GameEngine::update() {
     if (!isPaused)
     {
-        //std::cout << isFlagFallen << std::endl;
-
         if (isFlagFallen) // еще какое-то окно гейм овер
         {
             sleep(3);
@@ -316,20 +317,41 @@ void GameEngine::bonusEffect() {
     if (bonus == nullptr)
         return;
 
+    auto *handlingBonus = dynamic_cast<Bonus*>(bonus.get());
 
+    if (!(handlingBonus->getIsPicked()))
+        return;
+    else
+        points += BONUS_POINTS;
 
-
-    if ((dynamic_cast<Bonus*>(bonus.get())->getBonusType() == STAR) && dynamic_cast<Bonus*>(bonus.get())->getIsPicked())
+    if (handlingBonus->getBonusType() == HELMET)
+        dynamic_cast<PlayerTank *>(playerTank.get())->setIsInvulnerable();
+    else if (handlingBonus->getBonusType() == CLOCK)
     {
-        dynamic_cast<PlayerTank *>(playerTank.get())->addStar();
-        bonus.reset();
+
     }
+    else if (handlingBonus->getBonusType() == SHOVEL) // устанавливает металл вокруг базы
+    {
+
+    }
+    else if (handlingBonus->getBonusType() == STAR)
+        dynamic_cast<PlayerTank *>(playerTank.get())->addStar();
+    else if (handlingBonus->getBonusType() == GRENADE)
+    {
+        enemiesOnMap = 0;
+        enemyTanks.clear();
+    }
+    else if (handlingBonus->getBonusType() == TANK)
+    {
+        dynamic_cast<PlayerTank *>(playerTank.get())->addHealth();
+    }
+    bonus.reset();
 }
 
 void GameEngine ::dropEnemies()
 {
     timeBetweenRenderEnemyTank--;
-    if (remainingEnemies != 0 && enemiesOnMap < 4 && timeBetweenRenderEnemyTank == 0) {
+    if (remainingEnemies != 0 && enemiesOnMap < 4  && timeBetweenRenderEnemyTank <= 0) {
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         std::default_random_engine generator(seed);
         std::uniform_int_distribution<int> distribution(0, 3);
@@ -348,8 +370,8 @@ void GameEngine ::dropEnemies()
 
         enemyTanks.push_back(enemy);
         remainingEnemies--;
-
         enemiesOnMap++;
+        enemyWithBonusCounter = 0;
 
         timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
     }
@@ -359,7 +381,7 @@ void GameEngine ::dropEnemies()
         if (levelNum == MAX_LEVEL_NUM + 1)
             levelNum = 1;
         Map::loadMap(map, levelNum);
-        remainingEnemies = 10;
+        remainingEnemies = ENEMIES_ON_LEVEL;
         enemiesOnMap = 0; // тут окно с очками за уровень
         timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
         return;

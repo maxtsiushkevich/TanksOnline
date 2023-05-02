@@ -53,6 +53,7 @@ void PlayerTank::update(float time)
 {
     if (invulnerableTime.getElapsedTime().asSeconds() > INVULNERABLE_TIME)
         isInvulnerable = false;
+
     this->time = time;
     float distance = speed * time;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && canShoot && !isSpacePressed) {
@@ -167,4 +168,10 @@ void PlayerTank::addStar()
 {
     if (stars != 3)
         stars++;
+}
+
+void PlayerTank ::setIsInvulnerable()
+{
+    isInvulnerable = true;
+    invulnerableTime.restart();
 }
