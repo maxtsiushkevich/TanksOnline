@@ -5,6 +5,12 @@
 
 #include <iostream>
 
+#define TANK_SPEED 45.f
+#define ENEMY_TANK_SPEED 35.f
+#define CARRIER_SPEED 90.f
+#define INVULNERABLE_TIME 5.f
+#define DELAY_BEFORE_SHOOT 1.f
+
 extern float FACTOR;
 
 enum EnemyType

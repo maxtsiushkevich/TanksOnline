@@ -47,6 +47,7 @@ public:
     void render();
     void dropBonus();
     void bonusEffect();
+    void dropEnemies();
     void updateHUD();
     void end();
     void restart();

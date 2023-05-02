@@ -43,7 +43,8 @@ void GameEngine::togglePause() {
 }
 
 void GameEngine::update() {
-    if (!isPaused) {
+    if (!isPaused)
+    {
         //std::cout << isFlagFallen << std::endl;
 
         if (isFlagFallen) // еще какое-то окно гейм овер
@@ -58,43 +59,7 @@ void GameEngine::update() {
         if (dynamic_cast<Tank *>(playerTank.get())->getHealths() == 0)
             restart();
 
-        timeBetweenRenderEnemyTank--;
-        if (remainingEnemies != 0 && enemiesOnMap < 4 && timeBetweenRenderEnemyTank == 0) {
-            unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-            std::default_random_engine generator(seed);
-            std::uniform_int_distribution<int> distribution(0, 3);
-            int type = distribution(generator);
-
-            enemyWithBonusCounter++;
-
-            std::shared_ptr<IGameObject> enemy;
-
-            if ((enemyWithBonusCounter % 4) == 0)
-                enemy = std::make_shared<EnemyTank>(6. * (remainingEnemies % 3) * 16. * FACTOR, 0., allBullets, type,
-                                                    true);
-            else
-                enemy = std::make_shared<EnemyTank>(6. * (remainingEnemies % 3) * 16. * FACTOR, 0., allBullets, type,
-                                                    false);
-
-            enemyTanks.push_back(enemy);
-            remainingEnemies--;
-
-            enemiesOnMap++;
-
-            timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
-        }
-
-        if (remainingEnemies == 0 && enemiesOnMap == 0) {
-            levelNum++;
-            if (levelNum == MAX_LEVEL_NUM + 1)
-                levelNum = 1;
-            Map::loadMap(map, levelNum);
-            remainingEnemies = 10;
-            enemiesOnMap = 0; // тут окно с очками за уровень
-            timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
-            return;
-        }
-
+        dropEnemies();
 
         sf::Time time = clock.restart();
         float seconds = time.asSeconds();
@@ -279,7 +244,8 @@ void GameEngine::handleCollisions() {
     }
 
     if (bonus != nullptr) {
-        if (bonus->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds())) {
+        if (bonus->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds()))
+        {
             auto visitor = std::make_shared<CollisionWithTankVisitor>();
             bonus->handleCollision(visitor.get());
             //continue;
@@ -287,7 +253,8 @@ void GameEngine::handleCollisions() {
     }
 }
 
-void GameEngine::render() {
+void GameEngine::render()
+{
     for (auto &bullet: allBullets) {
         bullet->render(window);
     }
@@ -305,8 +272,10 @@ void GameEngine::render() {
         if (!dynamic_cast<Bonus *>(bonus.get())->getIsPicked())
             bonus->render(window);
     }
-
     window.draw(hud);
+
+    if (isPaused) // рендерим полупрозрачный спрайт с надписью PAUSE
+    {}
 }
 
 void GameEngine::updateHUD() {
@@ -344,8 +313,57 @@ void GameEngine::dropBonus() {
 }
 
 void GameEngine::bonusEffect() {
-    if (bonus == nullptr) // при подборе звезды не апается уровень
+    if (bonus == nullptr)
         return;
+
+
+
+
+    if ((dynamic_cast<Bonus*>(bonus.get())->getBonusType() == STAR) && dynamic_cast<Bonus*>(bonus.get())->getIsPicked())
+    {
+        dynamic_cast<PlayerTank *>(playerTank.get())->addStar();
+        bonus.reset();
+    }
+}
+
+void GameEngine ::dropEnemies()
+{
+    timeBetweenRenderEnemyTank--;
+    if (remainingEnemies != 0 && enemiesOnMap < 4 && timeBetweenRenderEnemyTank == 0) {
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        std::default_random_engine generator(seed);
+        std::uniform_int_distribution<int> distribution(0, 3);
+        int type = distribution(generator);
+
+        enemyWithBonusCounter++;
+
+        std::shared_ptr<IGameObject> enemy;
+
+        if ((enemyWithBonusCounter % 4) == 0)
+            enemy = std::make_shared<EnemyTank>(6. * (remainingEnemies % 3) * 16. * FACTOR, 0., allBullets, type,
+                                                true);
+        else
+            enemy = std::make_shared<EnemyTank>(6. * (remainingEnemies % 3) * 16. * FACTOR, 0., allBullets, type,
+                                                false);
+
+        enemyTanks.push_back(enemy);
+        remainingEnemies--;
+
+        enemiesOnMap++;
+
+        timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
+    }
+
+    if (remainingEnemies == 0 && enemiesOnMap == 0) {
+        levelNum++;
+        if (levelNum == MAX_LEVEL_NUM + 1)
+            levelNum = 1;
+        Map::loadMap(map, levelNum);
+        remainingEnemies = 10;
+        enemiesOnMap = 0; // тут окно с очками за уровень
+        timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
+        return;
+    }
 }
 
 void GameEngine::end() {

@@ -11,7 +11,6 @@ Brick::Brick(float x, float y) : MapObject(x, y) {
 }
 
 Metal::Metal(float x, float y) : MapObject(x, y) {
-    //isBulletPowerful = false;
     sprite.setTextureRect(sf::IntRect(256, 72, 8, 8));
 }
 

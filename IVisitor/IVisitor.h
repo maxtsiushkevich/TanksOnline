@@ -101,6 +101,4 @@ class CollisionWithMapObjectVisitor : public IVisitor
     void visit(Bonus &bonus) override {};
 };
 
-// collision with bonuses
-
 #endif

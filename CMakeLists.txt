@@ -16,6 +16,6 @@ add_executable(Game
         GameEngine/GameEngine.cpp
         Tank/Tank.cpp
         Bullet/Bullet.cpp
-        IVisitor/IVisitor.cpp IGameObject/IGameObject.cpp Map/Map.cpp Map/Map.h MapObject/MapObject.cpp MapObject/MapObject.h Bonus/Bonus.cpp Bonus/Bonus.h)
+        IVisitor/IVisitor.cpp IGameObject/IGameObject.cpp Map/Map.cpp Map/Map.h MapObject/MapObject.cpp MapObject/MapObject.h Bonus/Bonus.cpp Bonus/Bonus.h Tank/PlayerTank.cpp Tank/EnemyTank.cpp)
 
 target_link_libraries(Game sfml-graphics sfml-audio)
