@@ -286,8 +286,19 @@ void GameEngine::render()
     {}
 }
 
-void GameEngine::updateHUD() {
+void GameEngine::renderHUD()
+{
 
+//    for (int i = 0; i < remainingEnemies; i++)
+//    {
+//        for (int j = 0; j < 2; j++)
+//        {
+//            sf::Sprite littleTankSprite(mainTexture);
+//            littleTankSprite.setTextureRect(sf::IntRect(320, 192, 8, 8));
+//            //littleTankSprite.setPosition(376, y);
+//            //littleTankSprite.setScale(FACTOR, FACTOR);
+//        }
+//    }
 }
 
 void GameEngine::restart() {

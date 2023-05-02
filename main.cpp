@@ -8,6 +8,7 @@ float FACTOR = 5.f;
 
 int main()
 {
+
     sf::RenderWindow window;
     window.create(sf::VideoMode(208. * FACTOR + 32. * FACTOR, 208. * FACTOR), "Tanks Online",
                   sf::Style::Close | sf::Style::Titlebar);
