@@ -26,7 +26,7 @@ public:
     Bonus(float x, float y, int type);
     bool getIsPicked() const;
     void setIsPicked();
-    void update(float time) override;
+    void update(float time) override { };
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
     BonusType getBonusType();

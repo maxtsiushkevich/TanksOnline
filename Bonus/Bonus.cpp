@@ -24,7 +24,7 @@ void Bonus::render(sf::RenderWindow &window) {
 
 void Bonus::handleCollision(IVisitor *visitor) { visitor->visit(*this); };
 
-BonusType Bonus :: getBonusType()
+BonusType Bonus:: getBonusType()
 {
     return type;
 }

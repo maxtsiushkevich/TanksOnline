@@ -72,7 +72,7 @@ public:
 class EnemyTank : public Tank
 {
 protected:
-    bool isCollidingWithMap;
+    bool isColliding;
     EnemyType type;
     int randDest;
     bool isBonusTank;
@@ -84,10 +84,11 @@ public:
     void move(float distance) override;
     void shoot() override;
     void decrementHealth();
-    void setIsCollidingWithMap() { isCollidingWithMap = true;}
+    void setIsColliding() { isColliding = true;}
     void handleCollision(IVisitor *visitor) override;
     void enableShooting() override;
     bool getIsBonusTank() const { return isBonusTank; }
+    int getType() const { return type; }
 };
 
 #endif

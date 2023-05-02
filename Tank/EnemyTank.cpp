@@ -10,7 +10,7 @@ EnemyTank::EnemyTank(float x, float y, std::vector<std::shared_ptr<IGameObject>>
                                                                                                                                  allBullets)
 {
     this->isBonusTank = isBonusTank;
-    isCollidingWithMap = true;
+    isColliding = true;
     this->type = static_cast<EnemyType>(type);
     if (this->type == EnemyCarrier)
         speed = CARRIER_SPEED;
@@ -50,8 +50,8 @@ void EnemyTank::move(float distance)
 //    if (animation == 2) // обработка движения
 //        animation = 0;
 //
-//    if (isCollidingWithMap) {
-//        isCollidingWithMap = false;
+//    if (isColliding) {
+//        isColliding = false;
 //
 //        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 //        std::default_random_engine generator(seed);
@@ -70,7 +70,7 @@ void EnemyTank::move(float distance)
 //        {
 //            sprite.setPosition(0, sprite.getPosition().y);
 //            dx = 0;
-//            isCollidingWithMap = true;
+//            isColliding = true;
 //        }
 //        sprite.setPosition(dx, dy);
 //        tankDestination = LEFT;
@@ -82,7 +82,7 @@ void EnemyTank::move(float distance)
 //        {
 //            sprite.setPosition(192 * FACTOR, sprite.getPosition().y);
 //            dx = 192 * FACTOR;
-//            isCollidingWithMap = true;
+//            isColliding = true;
 //        }
 //        sprite.setPosition(dx, dy);
 //        tankDestination = RIGHT;
@@ -94,7 +94,7 @@ void EnemyTank::move(float distance)
 //        {
 //            sprite.setPosition(sprite.getPosition().x, 192 * FACTOR);
 //            dy = 192 * FACTOR;
-//            isCollidingWithMap = true;
+//            isColliding = true;
 //        }
 //        sprite.setPosition(dx, dy);
 //        tankDestination = DOWN;
@@ -107,13 +107,12 @@ void EnemyTank::move(float distance)
 //        {
 //            sprite.setPosition(sprite.getPosition().x, 0);
 //            dy = 0;
-//            isCollidingWithMap = true;
+//            isColliding = true;
 //        }
 //        sprite.setPosition(dx, dy);
 //        tankDestination = UP;
 //    }
 //    animation++;
-//    //}
 }
 
 void EnemyTank::decrementHealth() {
@@ -131,3 +130,4 @@ void EnemyTank ::enableShooting()
     delayBeforeShoot.restart();
     canShoot = true;
 }
+

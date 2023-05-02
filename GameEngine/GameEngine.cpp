@@ -75,6 +75,8 @@ void GameEngine::update() {
                     if (tank->getIsBonusTank())
                         dropBonus();
                 }
+                points += (dynamic_cast<EnemyTank *>((*it).get())->getType() + 1) * 100;
+                std::cout << points << std::endl;
                 it = enemyTanks.erase(it);
                 enemiesOnMap--;
             } else {
@@ -131,6 +133,7 @@ void GameEngine::handleCollisions() {
             {
                 obj->handleCollision(visitor.get());
                 playerTank->handleCollision(visitor.get());
+                dynamic_cast<EnemyTank *>(obj.get())->setIsColliding();
                 //continue;
             }
         }
@@ -171,10 +174,14 @@ void GameEngine::handleCollisions() {
 
         for (const auto &enemy: enemyTanks) {
             if (obj->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) &&
-                obj.get() != enemy.get() && dynamic_cast<Tank *>(obj.get())) {
+                obj.get() != enemy.get() && dynamic_cast<Tank *>(obj.get()))
+            {
                 auto visitor = std::make_shared<CollisionWithTankVisitor>();
                 obj->handleCollision(visitor.get());
                 enemy->handleCollision(visitor.get());
+
+                dynamic_cast<EnemyTank *>(obj.get())->setIsColliding();
+                dynamic_cast<EnemyTank *>(enemy.get())->setIsColliding();
                 continue;
             }
         }
@@ -236,7 +243,7 @@ void GameEngine::handleCollisions() {
                     dynamic_cast<Water *>(mapObj.get())) // через траву можно ездить
                 {
                     auto visitor = std::make_shared<CollisionWithMapObjectVisitor>();
-                    dynamic_cast<EnemyTank *>(enemy.get())->setIsCollidingWithMap();
+                    dynamic_cast<EnemyTank *>(enemy.get())->setIsColliding();
                     enemy->handleCollision(visitor.get());
                     continue;
                 }
@@ -361,9 +368,11 @@ void GameEngine ::dropEnemies()
 
         std::shared_ptr<IGameObject> enemy;
 
-        if ((enemyWithBonusCounter % 4) == 0)
+        if ((enemyWithBonusCounter % 4) == 0) {
             enemy = std::make_shared<EnemyTank>(6. * (remainingEnemies % 3) * 16. * FACTOR, 0., allBullets, type,
                                                 true);
+            enemyWithBonusCounter = 0;
+        }
         else
             enemy = std::make_shared<EnemyTank>(6. * (remainingEnemies % 3) * 16. * FACTOR, 0., allBullets, type,
                                                 false);
@@ -371,7 +380,6 @@ void GameEngine ::dropEnemies()
         enemyTanks.push_back(enemy);
         remainingEnemies--;
         enemiesOnMap++;
-        enemyWithBonusCounter = 0;
 
         timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
     }
