@@ -28,3 +28,5 @@ BonusType Bonus:: getBonusType()
 {
     return type;
 }
+
+void Bonus:: update(float time) { }

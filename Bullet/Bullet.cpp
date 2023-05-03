@@ -2,8 +2,11 @@
 
 #include <iostream>
 
-Bullet::Bullet(float x, float y, float speed, Destination dest, std::shared_ptr<IGameObject> owner) : IGameObject(x, y), bulletDestination(dest), owner(std::move(owner))
-{
+Bullet::Bullet(float x, float y, float speed, Destination dest, std::shared_ptr<IGameObject> owner) : IGameObject(x, y),
+                                                                                                      bulletDestination(
+                                                                                                              dest),
+                                                                                                      owner(std::move(
+                                                                                                              owner)) {
     this->speed = speed * FACTOR;
 
     switch (bulletDestination) {
@@ -74,14 +77,59 @@ void Bullet::render(sf::RenderWindow &window) {
     window.draw(sprite);
 }
 
-std::shared_ptr<IGameObject> Bullet :: getOwner() const
-{
+std::shared_ptr<IGameObject> Bullet::getOwner() const {
     return owner;
 }
 
-void Bullet ::setIsDestroyed()
-{
+void Bullet::setIsDestroyed() {
     isDestroyed = true;
-    ///std::cout << "dadada" << std::endl;
-    ///owner = nullptr;
+}
+
+PlayerBullet::PlayerBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner) : Bullet(x, y,
+                                                                                                            PLAYER_BULLET_SPEED,
+                                                                                                            dest,
+                                                                                                            std::move(
+                                                                                                                    owner)) {}
+
+void PlayerBullet::handleCollision(IVisitor *visitor) {
+    visitor->visit(*this);
+}
+
+PlayerFastBullet::PlayerFastBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner) : Bullet(x,
+                                                                                                                    y,
+                                                                                                                    PLAYER_FAST_BULLET_SPEED,
+                                                                                                                    dest,
+                                                                                                                    std::move(
+                                                                                                                            owner)) {}
+
+void PlayerFastBullet::handleCollision(IVisitor *visitor) {
+    visitor->visit(*this);
+}
+
+PlayerPowerfulBullet::PlayerPowerfulBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner)
+        : Bullet(x, y, PLAYER_BULLET_SPEED, dest, std::move(owner)) {}
+
+void PlayerPowerfulBullet::handleCollision(IVisitor *visitor) {
+    visitor->visit(*this);
+}
+
+
+EnemyBullet::EnemyBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner) : Bullet(x, y,
+                                                                                                          ENEMY_BULLET_SPEED,
+                                                                                                          dest,
+                                                                                                          std::move(
+                                                                                                                  owner)) {}
+
+void EnemyBullet::handleCollision(IVisitor *visitor) {
+    visitor->visit(*this);
+}
+
+EnemyFastBullet::EnemyFastBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner) : Bullet(x, y,
+                                                                                                                  ENEMY_FAST_BULLET_SPEED,
+                                                                                                                  dest,
+                                                                                                                  std::move(
+                                                                                                                          owner)) {}
+
+void EnemyFastBullet::handleCollision(IVisitor *visitor) {
+    visitor->visit(*this);
 }

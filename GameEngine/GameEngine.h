@@ -34,6 +34,9 @@ private:
     bool isPaused;
     sf::Clock clock;
 
+    sf::Clock clockBonusTimer;
+    bool isClockBonusActive;
+
     int enemyWithBonusCounter;
     int levelNum;
     bool isFlagFallen;

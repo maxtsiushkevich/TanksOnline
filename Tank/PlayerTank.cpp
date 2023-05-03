@@ -4,8 +4,7 @@
 PlayerTank::PlayerTank(float x, float y, std::vector<std::shared_ptr<IGameObject>> &allBullets) : Tank(x, y,
                                                                                                        TANK_SPEED, 3,
                                                                                                        allBullets),
-                                                                                                  stars(0)
-{
+                                                                                                  stars(0) {
     previousButton = UP;
     invulnerableTime.restart();
     isInvulnerable = true;
@@ -33,24 +32,21 @@ void PlayerTank::reset() {
     isSpacePressed = false;
 }
 
-void PlayerTank :: render(sf::RenderWindow &window)
-{
+void PlayerTank::render(sf::RenderWindow &window) {
     window.draw(sprite);
-    if (isInvulnerable)
-    {
+    if (isInvulnerable) {
         if (animation == 2) // обработка движения
             animation = 0;
         sf::Sprite effect;
         effect.setTexture(texture);
-        effect.setTextureRect(sf::IntRect(256 +(16*animation), 144, 16, 16));
+        effect.setTextureRect(sf::IntRect(256 + (16 * animation), 144, 16, 16));
         effect.setPosition(dx, dy);
         effect.setScale(FACTOR, FACTOR);
         window.draw(effect);
     }
 }
 
-void PlayerTank::update(float time)
-{
+void PlayerTank::update(float time) {
     if (invulnerableTime.getElapsedTime().asSeconds() > INVULNERABLE_TIME)
         isInvulnerable = false;
 
@@ -93,8 +89,7 @@ void PlayerTank::handleCollision(IVisitor *visitor) {
     visitor->visit(*this);
 }
 
-void PlayerTank::move(float distance)
-{
+void PlayerTank::move(float distance) {
     if (animation == 2) // обработка движения
         animation = 0;
 
@@ -164,14 +159,16 @@ void PlayerTank::move(float distance)
     animation++;
 }
 
-void PlayerTank::addStar()
-{
+void PlayerTank::addStar() {
     if (stars != 3)
         stars++;
 }
 
-void PlayerTank ::setIsInvulnerable()
-{
+void PlayerTank::setIsInvulnerable() {
     isInvulnerable = true;
     invulnerableTime.restart();
 }
+
+bool PlayerTank::getIsInvulnerable() const { return isInvulnerable; }
+
+void PlayerTank::addHealth() { health++; }

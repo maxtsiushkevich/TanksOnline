@@ -42,10 +42,10 @@ public:
     virtual void move(float distance) = 0;
     virtual void shoot() = 0;
     virtual void enableShooting();
-    float getTime() const { return time; }
-    float getSpeed() const { return speed; }
-    int getHealths() const { return health; }
-    void decrementAnimation() { animation--; }
+    float getTime() const;
+    float getSpeed() const;
+    int getHealths() const;
+    void decrementAnimation();
 };
 
 class PlayerTank : public Tank {
@@ -64,8 +64,8 @@ public:
     void reset();
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
-    bool getIsInvulnerable() const { return isInvulnerable; }
-    void addHealth() { health++; }
+    bool getIsInvulnerable() const;
+    void addHealth();
     void setIsInvulnerable();
 };
 
@@ -84,11 +84,11 @@ public:
     void move(float distance) override;
     void shoot() override;
     void decrementHealth();
-    void setIsColliding() { isColliding = true;}
+    void setIsColliding();
     void handleCollision(IVisitor *visitor) override;
     void enableShooting() override;
-    bool getIsBonusTank() const { return isBonusTank; }
-    int getType() const { return type; }
+    bool getIsBonusTank() const;
+    int getType() const;
 };
 
 #endif

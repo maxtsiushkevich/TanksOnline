@@ -1,7 +1,6 @@
 #include "MapObject.h"
 
-MapObject :: MapObject(float x, float y) : IGameObject(x, y)
-{
+MapObject::MapObject(float x, float y) : IGameObject(x, y) {
     sprite.setPosition(x, y);
     sprite.setScale(FACTOR, FACTOR);
 }
@@ -22,8 +21,7 @@ Grass::Grass(float x, float y) : MapObject(x, y) {
     sprite.setTextureRect(sf::IntRect(264, 72, 8, 8));
 }
 
-Eagle::Eagle(float x, float y) : MapObject(x, y)
-{
+Eagle::Eagle(float x, float y) : MapObject(x, y) {
     isFallen = false;
     sprite.setTextureRect(sf::IntRect(304, 32, 16, 16));
 }
@@ -62,15 +60,26 @@ void Water::handleCollision(IVisitor *visitor) {
 }
 
 void Grass::handleCollision(IVisitor *visitor) {
-      visitor->visit(*this);
+    visitor->visit(*this);
 }
 
 void Eagle::handleCollision(IVisitor *visitor) {
     visitor->visit(*this);
 }
 
-void Eagle :: setIsFallen()
-{
+void Eagle::setIsFallen() {
     isFallen = true;
     sprite.setTextureRect(sf::IntRect(320, 32, 16, 16));
 }
+
+void Brick::update(float time) {}
+
+void Metal::update(float time) {}
+
+void Water::update(float time) {}
+
+void Grass::update(float time) {}
+
+void Eagle::update(float time) {}
+
+bool Eagle::getIsFallen() { return isFallen; }
