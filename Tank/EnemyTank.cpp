@@ -47,71 +47,71 @@ void EnemyTank::shoot() {
 }
 
 void EnemyTank::move(float distance) {
-    if (animation == 2) // обработка движения
-        animation = 0;
-
-    if (isColliding) {
-        isColliding = false;
-
-        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-        std::default_random_engine generator(seed);
-        std::uniform_int_distribution<int> distribution(0, 3);
-
-        // Генерируем случайное число
-        randDest = distribution(generator);
-        return;
-    }
-
-    if (randDest == 0) // влево
-    {
-        sprite.setTextureRect(sf::IntRect(160 + (16 * animation), 64 + (type * 16), 16, 16));
-        dx -= distance;
-        if (sprite.getPosition().x < 0) // проверка на выезд за предел экрана
-        {
-            sprite.setPosition(0, sprite.getPosition().y);
-            dx = 0;
-            isColliding = true;
-        }
-        sprite.setPosition(dx, dy);
-        tankDestination = LEFT;
-    } else if (randDest == 1) // вправо
-    {
-        sprite.setTextureRect(sf::IntRect(224 + (16 * animation), 64 + (type * 16), 16, 16));
-        dx += distance;
-        if (sprite.getPosition().x > 192 * FACTOR) // проверка на выезд за предел экрана
-        {
-            sprite.setPosition(192 * FACTOR, sprite.getPosition().y);
-            dx = 192 * FACTOR;
-            isColliding = true;
-        }
-        sprite.setPosition(dx, dy);
-        tankDestination = RIGHT;
-    } else if (randDest == 2) // вниз
-    {
-        sprite.setTextureRect(sf::IntRect(192 + (16 * animation), 64 + (type * 16), 16, 16));
-        dy += distance;
-        if (sprite.getPosition().y > 192 * FACTOR) // проверка на выезд за предел экрана
-        {
-            sprite.setPosition(sprite.getPosition().x, 192 * FACTOR);
-            dy = 192 * FACTOR;
-            isColliding = true;
-        }
-        sprite.setPosition(dx, dy);
-        tankDestination = DOWN;
-    } else if (randDest == 3) // вверх
-    {
-        sprite.setTextureRect(
-                sf::IntRect(128 + (16 * animation), 64 + (type * 16), 16, 16)); // по строкам в зависимости от звезд
-        dy -= distance;
-        if (sprite.getPosition().y < 0) // проверка на выезд за предел экрана
-        {
-            sprite.setPosition(sprite.getPosition().x, 0);
-            dy = 0;
-            isColliding = true;
-        }
-        sprite.setPosition(dx, dy);
-        tankDestination = UP;
-    }
+//    if (animation == 2) // обработка движения
+//        animation = 0;
+//
+//    if (isColliding) {
+//        isColliding = false;
+//
+//        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+//        std::default_random_engine generator(seed);
+//        std::uniform_int_distribution<int> distribution(0, 3);
+//
+//        // Генерируем случайное число
+//        randDest = distribution(generator);
+//        return;
+//    }
+//
+//    if (randDest == 0) // влево
+//    {
+//        sprite.setTextureRect(sf::IntRect(160 + (16 * animation), 64 + (type * 16), 16, 16));
+//        dx -= distance;
+//        if (sprite.getPosition().x < 0) // проверка на выезд за предел экрана
+//        {
+//            sprite.setPosition(0, sprite.getPosition().y);
+//            dx = 0;
+//            isColliding = true;
+//        }
+//        sprite.setPosition(dx, dy);
+//        tankDestination = LEFT;
+//    } else if (randDest == 1) // вправо
+//    {
+//        sprite.setTextureRect(sf::IntRect(224 + (16 * animation), 64 + (type * 16), 16, 16));
+//        dx += distance;
+//        if (sprite.getPosition().x > 192 * FACTOR) // проверка на выезд за предел экрана
+//        {
+//            sprite.setPosition(192 * FACTOR, sprite.getPosition().y);
+//            dx = 192 * FACTOR;
+//            isColliding = true;
+//        }
+//        sprite.setPosition(dx, dy);
+//        tankDestination = RIGHT;
+//    } else if (randDest == 2) // вниз
+//    {
+//        sprite.setTextureRect(sf::IntRect(192 + (16 * animation), 64 + (type * 16), 16, 16));
+//        dy += distance;
+//        if (sprite.getPosition().y > 192 * FACTOR) // проверка на выезд за предел экрана
+//        {
+//            sprite.setPosition(sprite.getPosition().x, 192 * FACTOR);
+//            dy = 192 * FACTOR;
+//            isColliding = true;
+//        }
+//        sprite.setPosition(dx, dy);
+//        tankDestination = DOWN;
+//    } else if (randDest == 3) // вверх
+//    {
+//        sprite.setTextureRect(
+//                sf::IntRect(128 + (16 * animation), 64 + (type * 16), 16, 16)); // по строкам в зависимости от звезд
+//        dy -= distance;
+//        if (sprite.getPosition().y < 0) // проверка на выезд за предел экрана
+//        {
+//            sprite.setPosition(sprite.getPosition().x, 0);
+//            dy = 0;
+//            isColliding = true;
+//        }
+//        sprite.setPosition(dx, dy);
+//        tankDestination = UP;
+//    }
 //    animation++;
 }
 

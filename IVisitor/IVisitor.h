@@ -1,7 +1,6 @@
 #ifndef GAME_IVISITOR_H
 #define GAME_IVISITOR_H
 
-
 class PlayerTank;
 class EnemyTank;
 

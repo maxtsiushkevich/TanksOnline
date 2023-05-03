@@ -4,7 +4,7 @@
 
 #include "MapObject/MapObject.h"
 
-float FACTOR = 5.f;
+float FACTOR = 4.f;
 
 int main()
 {
@@ -12,7 +12,7 @@ int main()
     sf::RenderWindow window;
     window.create(sf::VideoMode(208. * FACTOR + 32. * FACTOR, 208. * FACTOR), "Tanks Online",
                   sf::Style::Close | sf::Style::Titlebar);
-    window.setFramerateLimit(45);
+    window.setFramerateLimit(55);
 
     GameEngine engine(window);
     engine.init();

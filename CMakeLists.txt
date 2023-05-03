@@ -4,7 +4,6 @@ project(Game)
 find_package(SFML 2.5.1 COMPONENTS graphics audio REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
-set(SFML_INCLUDE_DIR /usr/local/include/SFML)
 
 add_executable(Game
         main.cpp
