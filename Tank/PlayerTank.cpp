@@ -35,7 +35,8 @@ void PlayerTank::reset() {
 
 void PlayerTank::render(sf::RenderWindow &window) {
     window.draw(sprite);
-    if (isInvulnerable) {
+    if (isInvulnerable)
+    {
         if (animation == 2) // обработка движения
             animation = 0;
         sf::Sprite effect;
@@ -106,7 +107,6 @@ void PlayerTank::move(float distance) {
             dx = round(dx / (8 * FACTOR)) * (8 * FACTOR);
             dy = round(dy / (8 * FACTOR)) * (8 * FACTOR);
         }
-        sprite.setPosition(dx, dy);
         previousButton = LEFT;
         tankDestination = LEFT;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
@@ -121,10 +121,10 @@ void PlayerTank::move(float distance) {
             dx = round(dx / (8 * FACTOR)) * (8 * FACTOR);
             dy = round(dy / (8 * FACTOR)) * (8 * FACTOR);
         }
-        sprite.setPosition(dx, dy);
         previousButton = RIGHT;
         tankDestination = RIGHT;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+    }
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         sprite.setTextureRect(sf::IntRect(64 + (16 * animation), stars * 16, 16, 16));
         dy += distance;
         if (sprite.getPosition().y > 192 * FACTOR) // проверка на выезд за предел экрана
@@ -136,10 +136,10 @@ void PlayerTank::move(float distance) {
             dx = round(dx / (8 * FACTOR)) * (8 * FACTOR);
             dy = round(dy / (8 * FACTOR)) * (8 * FACTOR);
         }
-        sprite.setPosition(dx, dy);
-        previousButton = RIGHT;
+        previousButton = DOWN;
         tankDestination = DOWN;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+    }
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         sprite.setTextureRect(
                 sf::IntRect(0 + (16 * animation), stars * 16, 16, 16)); // по строкам в зависимости от звезд
         dy -= distance;
@@ -152,10 +152,10 @@ void PlayerTank::move(float distance) {
             dx = round(dx / (8 * FACTOR)) * (8 * FACTOR);
             dy = round(dy / (8 * FACTOR)) * (8 * FACTOR);
         }
-        sprite.setPosition(dx, dy);
         previousButton = UP;
         tankDestination = UP;
     }
+    sprite.setPosition(dx, dy);
     previousButton = tankDestination;
     animation++;
 }

@@ -343,7 +343,8 @@ void GameEngine::renderHUD() {
     std::vector<sf::Sprite> remEnem;
     sf::Sprite littleTankSprite(mainTexture);
     littleTankSprite.setTextureRect(sf::IntRect(320, 192, 8, 8));
-    for (int i = 0; i < remainingEnemies / 2; i++) {
+    for (int i = 0; i < remainingEnemies / 2; i++)
+    {
         for (int j = 0; j < 2; j++) {
             littleTankSprite.setPosition((float) (216 + j * 8) * FACTOR,
                                          (float) (16 + i * 8) * FACTOR);  // задание координат клетки
@@ -356,8 +357,9 @@ void GameEngine::renderHUD() {
         littleTankSprite.setScale(FACTOR, FACTOR);
         remEnem.push_back(littleTankSprite);
     }
-    for (const auto &sprite: remEnem)
+    for (const auto &sprite: remEnem) {
         window.draw(sprite);
+    }
 
     int tmpHealths = dynamic_cast<PlayerTank *>(playerTank.get())->getHealths();
     sf::Sprite healthSprite(mainTexture);
