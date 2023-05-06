@@ -4,7 +4,7 @@
 
 #include "MapObject/MapObject.h"
 
-float FACTOR = 4.f;
+float FACTOR = 5.f;
 
 int main()
 {
@@ -39,3 +39,8 @@ int main()
     engine.end();
     return 0;
 }
+
+
+
+
+

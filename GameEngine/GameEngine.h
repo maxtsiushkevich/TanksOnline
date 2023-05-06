@@ -5,11 +5,17 @@
 #include "../IGameObject/IGameObject.h"
 #include <memory>
 
+#define FONT_NAME "Font.ttf"
+#define SPRITE_LIST_NAME "SpriteList.png"
+
 extern float FACTOR;
 
 class GameEngine
-        {
+{
 private:
+
+    sf::Font font;
+
     sf::RenderWindow &window;
     sf::Texture mainTexture;
 

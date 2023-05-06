@@ -21,11 +21,14 @@
 #define BONUS_POINTS 500
 
 void GameEngine::init() {
+
+
     isPaused = false;
     isFlagFallen = false;
     isClockBonusActive = false;
     points = 0;
-    mainTexture.loadFromFile("SpriteList.png");
+    mainTexture.loadFromFile(SPRITE_LIST_NAME);
+    font.loadFromFile(FONT_NAME);
 
     IGameObject::texture = mainTexture;
 
@@ -50,18 +53,37 @@ void GameEngine::togglePause() {
     isPaused = !isPaused;
 }
 
-void GameEngine::update() {
-    if (!isPaused) {
+void GameEngine::update()
+{
+    if (!isPaused)
+    {
         if (isFlagFallen) // еще какое-то окно гейм овер
         {
-//            sf::Sprite gameOverSprite(mainTexture);
-//            gameOverSprite.setTextureRect(sf::IntRect(288, 184, 32, 16));
-//            gameOverSprite.setPosition(85*FACTOR, 100*FACTOR);
-//            gameOverSprite.setScale(FACTOR, FACTOR);
-//            window.draw(gameOverSprite);
-            sleep(3);
-            clock.restart();
-            restart();
+
+            sf::Sprite gameOverSprite(mainTexture);
+            gameOverSprite.setTextureRect(sf::IntRect(288, 184, 32, 16));
+            gameOverSprite.setPosition(85*FACTOR, 100*FACTOR);
+            gameOverSprite.setScale(FACTOR, FACTOR);
+
+            while (1)
+            {
+                window.clear();
+                std::string resultString = "Your score is " + std::to_string(points);
+                sf::Text text(resultString, font, 6*FACTOR);
+                text.setPosition(100, 100);
+
+
+                window.draw(gameOverSprite);
+                window.draw(text);
+
+                window.display();
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+                {
+                    clock.restart();
+                    restart();
+                    break;
+                }
+            }
         }
 
         if (remainingEnemies == 0 && enemiesOnMap == 0) {
@@ -163,7 +185,6 @@ void GameEngine::handleCollisions() {
                 obj->handleCollision(visitor.get());
                 playerTank->handleCollision(visitor.get());
                 dynamic_cast<EnemyTank *>(obj.get())->setIsColliding();
-                //continue;
             }
         }
 
@@ -225,7 +246,6 @@ void GameEngine::handleCollisions() {
             {
                 auto visitor = std::make_shared<CollisionWithMapObjectVisitor>();
                 playerTank->handleCollision(visitor.get());
-                //continue;
             }
         }
 
@@ -283,7 +303,6 @@ void GameEngine::handleCollisions() {
         if (bonus->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds())) {
             auto visitor = std::make_shared<CollisionWithTankVisitor>();
             bonus->handleCollision(visitor.get());
-            //continue;
         }
     }
 }
@@ -322,10 +341,10 @@ void GameEngine::render() {
 
 void GameEngine::renderHUD() {
     std::vector<sf::Sprite> remEnem;
+    sf::Sprite littleTankSprite(mainTexture);
+    littleTankSprite.setTextureRect(sf::IntRect(320, 192, 8, 8));
     for (int i = 0; i < remainingEnemies / 2; i++) {
         for (int j = 0; j < 2; j++) {
-            sf::Sprite littleTankSprite(mainTexture);
-            littleTankSprite.setTextureRect(sf::IntRect(320, 192, 8, 8));
             littleTankSprite.setPosition((float) (216 + j * 8) * FACTOR,
                                          (float) (16 + i * 8) * FACTOR);  // задание координат клетки
             littleTankSprite.setScale(FACTOR, FACTOR);
@@ -333,8 +352,6 @@ void GameEngine::renderHUD() {
         }
     }
     if (remainingEnemies % 2 == 1) {
-        sf::Sprite littleTankSprite(mainTexture);
-        littleTankSprite.setTextureRect(sf::IntRect(320, 192, 8, 8));
         littleTankSprite.setPosition(216 * FACTOR, (float) (16 + (remainingEnemies / 2) * 8) * FACTOR);
         littleTankSprite.setScale(FACTOR, FACTOR);
         remEnem.push_back(littleTankSprite);
