@@ -20,6 +20,7 @@ private:
     sf::Texture mainTexture;
 
     std::shared_ptr<IGameObject> playerTank;
+    std::shared_ptr<IGameObject> allyTank;
 
     std::vector<std::shared_ptr<IGameObject>> map;
 
@@ -33,13 +34,13 @@ private:
 
     int points;
 
-    int enemiesOnMap;
+    int enemiesOnScreen;
     int remainingEnemies;
 
     int timeBetweenRenderEnemyTank;
 
     bool isPaused;
-    sf::Clock clock;
+    sf::Clock timeBetweenFrames;
 
     sf::Clock clockBonusTimer;
     bool isClockBonusActive;
@@ -47,10 +48,12 @@ private:
     int enemyWithBonusCounter;
     int levelNum;
     bool isFlagFallen;
+    bool isTwoPlayers;
+
 public:
     GameEngine(sf::RenderWindow &window) : window(window) {}
     ~GameEngine() = default;
-    void init();
+    void init(bool isTwoPlayers);
     void update();
     void handleCollisions();
     void togglePause();

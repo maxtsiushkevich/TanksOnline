@@ -20,14 +20,14 @@ protected:
     sf::Sprite sprite;
     float dx, dy;
 public:
-    IGameObject(float x, float y);
     static sf::Texture texture;
+    IGameObject(float x, float y);
     virtual ~IGameObject() = default;
     virtual void update(float time) = 0;
     virtual void render(sf::RenderWindow &window) = 0;
     virtual void handleCollision(IVisitor *visitor) = 0;
-    bool getIsDestroyed();
     virtual void setIsDestroyed();
+    bool getIsDestroyed();
     sf::Sprite &getSprite();
 };
 

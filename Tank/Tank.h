@@ -31,8 +31,6 @@ protected:
     bool canShoot;
     float speed;
     float time;
-
-    std::shared_ptr<IGameObject> bullet;
     std::vector<std::shared_ptr<IGameObject>> &allBullets;
 
 public:
@@ -52,11 +50,13 @@ class PlayerTank : public Tank {
 protected:
     bool isInvulnerable;
     Destination previousButton;
-    bool isSpacePressed;
+    bool isShootButtonPressed;
     int stars;
     sf::Clock invulnerableTime;
+    bool isAllyTank;
 public:
-    PlayerTank(float x, float y, std::vector<std::shared_ptr<IGameObject>> &allBullets);
+    PlayerTank(float x, float y, std::vector<std::shared_ptr<IGameObject>> &allBullets, bool isAllyTank);
+    ~PlayerTank() override = default;
     void update(float time) override;
     void move(float distance) override;
     void shoot() override;

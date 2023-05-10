@@ -7,7 +7,7 @@
 void Map::loadMap(std::vector<std::shared_ptr<IGameObject>> &map, int levelNum)
 {
     map.clear();
-    std::string levelFile = "level" + std::to_string(levelNum) + ".txt";
+    std::string levelFile = "../Levels/level" + std::to_string(levelNum) + ".txt";
 
     std::cout << levelFile << std::endl;
 

@@ -1,0 +1,26 @@
+      MM      MM
+      MM      MM
+  BB  MM      BB  BB  BB
+  BB  MM      BB  BB  BB
+  BB        BBBB  BBMMBB
+  BB        BBBB  BBMMBB
+      BB          MM
+      BB          MM
+GG    BB    MM    BBGGBBMM
+GG    BB    MM    BBGGBBMM
+GGGG      BB    MM  GG
+GGGG      BB    MM  GG
+  BBBBBBGGGGGGMM    GGBB
+  BBBBBBGGGGGGMM    GGBB
+      MMGGBB  BB  BB  BB
+      MMGGBB  BB  BB  BB
+MMBB  MM  BB  BB      BB
+MMBB  MM  BB  BB      BB
+  BB  BB  BBBBBB  BBMMBB
+  BB  BB  BBBBBB  BBMMBB
+  BB  BB  BBBBBB
+  BB  BB  BBBBBB
+  BB              BB  BB
+  BB       BBBB   BB  BB
+  BB  BB   BE B   BBBBBB
+  BB  BB   B  B   BBBBBB

@@ -6,7 +6,7 @@
 
 EnemyTank::EnemyTank(float x, float y, std::vector<std::shared_ptr<IGameObject>> &allBullets, int type,
                      bool isBonusTank) : Tank(x, y,
-                                              45,
+                                              ENEMY_TANK_SPEED,
                                               1,
                                               allBullets) {
     this->isBonusTank = isBonusTank;
@@ -16,14 +16,18 @@ EnemyTank::EnemyTank(float x, float y, std::vector<std::shared_ptr<IGameObject>>
 
     this->type = static_cast<EnemyType>(type);
 
-    if (type == EnemyCarrier)
-        speed = 90;
+    if (this->type == EnemyCarrier)
+        speed = CARRIER_SPEED;
 
     if (this->type == EnemyHeavyTank)
         health = 4;
 
     tankDestination = DOWN;
     sprite.setTextureRect(sf::IntRect(192, 64 + (16 * type), 16, 16));
+
+    if(isBonusTank)
+        sprite.setColor(sf::Color(255, 0, 0, 230));
+
     sprite.setPosition(x, y);
     sprite.setScale(FACTOR, FACTOR);
 }
@@ -32,13 +36,15 @@ void EnemyTank::update(float time) {
     this->time = time;
     float distance = speed * time;
     if (canShoot && (delayBeforeShoot.getElapsedTime().asSeconds() > DELAY_BEFORE_SHOOT)) {
-        this->shoot();
+    //    this->shoot();
     }
 
     this->move(distance);
 }
 
-void EnemyTank::shoot() {
+void EnemyTank::shoot()
+{
+    std::shared_ptr<IGameObject> bullet;
     if (type != EnemyShootingTank)
         bullet = std::make_shared<EnemyBullet>(dx, dy, tankDestination, shared_from_this());
     else bullet = std::make_shared<EnemyFastBullet>(dx, dy, tankDestination, shared_from_this());
@@ -49,17 +55,20 @@ void EnemyTank::shoot() {
     }
 }
 
-void EnemyTank::move(float distance)
-{
-   /* if (isColliding) {
+void EnemyTank::move(float distance) {
+    if (isColliding)
+    {
         isColliding = false;
-
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         std::default_random_engine generator(seed);
         std::uniform_int_distribution<int> distribution(0, 3);
 
+        dx = round(dx / (8 * FACTOR)) * (8 * FACTOR);
+        dy = round(dy / (8 * FACTOR)) * (8 * FACTOR);
+
         // Генерируем случайное число
         randDest = distribution(generator);
+        move(distance);
         return;
     }
 
@@ -74,12 +83,10 @@ void EnemyTank::move(float distance)
         {
             sprite.setPosition(0, sprite.getPosition().y);
             dx = 0;
-            //isColliding = true;
+            isColliding = true;
         }
-        sprite.setPosition(dx, dy);
         tankDestination = LEFT;
-    }
-    else if (randDest == 1) // вправо
+    } else if (randDest == 1) // вправо
     {
         sprite.setTextureRect(sf::IntRect(224 + (16 * animation), 64 + (static_cast<int>(type) * 16), 16, 16));
         dx += distance;
@@ -87,12 +94,10 @@ void EnemyTank::move(float distance)
         {
             sprite.setPosition(192 * FACTOR, sprite.getPosition().y);
             dx = 192 * FACTOR;
-            //isColliding = true;
+            isColliding = true;
         }
-        sprite.setPosition(dx, dy);
         tankDestination = RIGHT;
-    }
-    else if (randDest == 2) // вниз
+    } else if (randDest == 2) // вниз
     {
         sprite.setTextureRect(sf::IntRect(192 + (16 * animation), 64 + (static_cast<int>(type) * 16), 16, 16));
         dy += distance;
@@ -100,12 +105,10 @@ void EnemyTank::move(float distance)
         {
             sprite.setPosition(sprite.getPosition().x, 192 * FACTOR);
             dy = 192 * FACTOR;
-            //isColliding = true;
+            isColliding = true;
         }
-        sprite.setPosition(dx, dy);
         tankDestination = DOWN;
-    }
-    else if (randDest == 3) // вверх
+    } else if (randDest == 3) // вверх
     {
         sprite.setTextureRect(
                 sf::IntRect(128 + (16 * animation), 64 + (static_cast<int>(type) * 16), 16,
@@ -115,13 +118,16 @@ void EnemyTank::move(float distance)
         {
             sprite.setPosition(sprite.getPosition().x, 0);
             dy = 0;
-            //isColliding = true;
+            isColliding = true;
         }
-        sprite.setPosition(dx, dy);
         tankDestination = UP;
     }
-    animation++; */
+
+    animation++;
+    sprite.setPosition(dx, dy);
+
 }
+
 
 void EnemyTank::decrementHealth() {
     health--;

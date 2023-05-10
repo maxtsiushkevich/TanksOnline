@@ -12,6 +12,11 @@
 
 #define PLAYER_SPAWN_X 64
 #define PLAYER_SPAWN_Y 192
+
+#define ALLY_SPAWN_X 128
+#define ALLY_SPAWN_Y 192
+
+
 #define TIME_BETWEEN_RENDER_ENEMY_TANK 90
 #define MAX_LEVEL_NUM 30
 #define ENEMIES_ON_LEVEL 18
@@ -20,9 +25,9 @@
 
 #define BONUS_POINTS 500
 
-void GameEngine::init() {
+void GameEngine::init(bool isTwoPlayers) {
 
-
+    this->isTwoPlayers = isTwoPlayers;
     isPaused = false;
     isFlagFallen = false;
     isClockBonusActive = false;
@@ -37,10 +42,12 @@ void GameEngine::init() {
 
     timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
 
-    playerTank = std::make_shared<PlayerTank>(PLAYER_SPAWN_X * FACTOR, PLAYER_SPAWN_Y * FACTOR, allBullets);
+    playerTank = std::make_shared<PlayerTank>(PLAYER_SPAWN_X * FACTOR, PLAYER_SPAWN_Y * FACTOR, allBullets, false);
+    if (isTwoPlayers)
+        allyTank = std::make_shared<PlayerTank>(ALLY_SPAWN_X * FACTOR, ALLY_SPAWN_Y * FACTOR, allBullets, true);
 
     remainingEnemies = ENEMIES_ON_LEVEL;
-    enemiesOnMap = 0;
+    enemiesOnScreen = 0;
 
     hud.setTexture(mainTexture);
     hud.setTextureRect(sf::IntRect(368, 0, 32, 224));
@@ -57,7 +64,7 @@ void GameEngine::update()
 {
     if (!isPaused)
     {
-        if (isFlagFallen) // еще какое-то окно гейм овер
+        if (isFlagFallen)
         {
 
             sf::Sprite gameOverSprite(mainTexture);
@@ -68,7 +75,7 @@ void GameEngine::update()
             while (1)
             {
                 window.clear();
-                std::string resultString = "Your score is " + std::to_string(points);
+                std::string resultString = "Your score is " + std::to_string(points) + "\n\nPress 'Enter' to restart";
                 sf::Text text(resultString, font, 6*FACTOR);
                 text.setPosition(100, 100);
 
@@ -79,35 +86,53 @@ void GameEngine::update()
                 window.display();
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
                 {
-                    clock.restart();
+                    timeBetweenFrames.restart();
                     restart();
                     break;
                 }
             }
         }
 
-        if (remainingEnemies == 0 && enemiesOnMap == 0) {
-            // показываем стату
+        if (remainingEnemies == 0 && enemiesOnScreen == 0)
+        {
+            while (1)
+            {
+                window.clear();
+
+                std::string infoString = "Level complete!\n\n"
+                                                  "Your score is " + std::to_string(points)
+                                                  + "\n\nPress 'Enter' to continue";
+                sf::Text text(infoString, font, 6*FACTOR);
+                text.setPosition(100, 100);
+
+                window.draw(text);
+
+                window.display();
+               if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+                   break;
+            }
+
             levelNum++;
             if (levelNum == MAX_LEVEL_NUM + 1)
                 levelNum = 1;
             Map::loadMap(map, levelNum);
             remainingEnemies = ENEMIES_ON_LEVEL;
-            enemiesOnMap = 0; // тут окно с очками за уровень
+            enemiesOnScreen = 0; // тут окно с очками за уровень
             timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
             bonus.reset();
             return;
         }
 
-        bonusEffect();
+        if (bonus != nullptr)
+            bonusEffect();
 
-        if (dynamic_cast<Tank *>(playerTank.get())->getHealths() == 0)
+        if (dynamic_cast<Tank *>(playerTank.get())->getHealths() == 0 && dynamic_cast<Tank *>(allyTank.get())->getHealths() == 0)
             restart();
 
         dropEnemies();
 
 
-        sf::Time time = clock.restart();
+        sf::Time time = timeBetweenFrames.restart();
 
         float seconds = time.asSeconds();
 
@@ -123,7 +148,7 @@ void GameEngine::update()
                 points += (dynamic_cast<EnemyTank *>((*it).get())->getType() + 1) * 100;
                 std::cout << points << std::endl;
                 it = enemyTanks.erase(it);
-                enemiesOnMap--;
+                enemiesOnScreen--;
             } else if (!isClockBonusActive) {
                 (*it)->update(seconds);
                 ++it;
@@ -135,6 +160,8 @@ void GameEngine::update()
             isClockBonusActive = false;
 
         playerTank->update(seconds);
+        if (isTwoPlayers)
+            allyTank->update(seconds);
 
         allBullets.erase(std::remove_if(allBullets.begin(), allBullets.end(),
                                         [seconds](const auto &gameObject) {
@@ -151,13 +178,20 @@ void GameEngine::update()
                                         }), allBullets.end());
 
     } else
-        clock.restart();
+        timeBetweenFrames.restart();
 }
 
 void GameEngine::handleCollisions() {
     std::vector<std::shared_ptr<IGameObject>> allObjects;
     allObjects.insert(allObjects.end(), enemyTanks.begin(), enemyTanks.end());
     allObjects.insert(allObjects.end(), allBullets.begin(), allBullets.end());
+
+    if (playerTank->getSprite().getGlobalBounds().intersects(allyTank->getSprite().getGlobalBounds()))
+    {
+        auto visitor = std::make_shared<CollisionWithTankVisitor>();
+        playerTank->handleCollision(visitor.get());
+        allyTank->handleCollision(visitor.get());
+    }
 
     for (const auto &obj: allObjects) // идем по объединенному вектору танков врагов и всех пуль
     {
@@ -184,6 +218,33 @@ void GameEngine::handleCollisions() {
             {
                 obj->handleCollision(visitor.get());
                 playerTank->handleCollision(visitor.get());
+                dynamic_cast<EnemyTank *>(obj.get())->setIsColliding();
+            }
+        }
+
+        if (obj->getSprite().getGlobalBounds().intersects(
+                allyTank->getSprite().getGlobalBounds())) // обработка коллизии танка врага или пули с танком игрока
+        {
+
+            auto visitor = std::make_shared<CollisionWithTankVisitor>();
+
+            if ((dynamic_cast<EnemyBullet *>(obj.get()) || dynamic_cast<EnemyFastBullet *>(obj.get()) &&
+                                                           !(dynamic_cast<Bullet *>(obj.get())->getIsDestroyed()))) // если вражеская пуля попала в игрока
+            {
+                obj->handleCollision(visitor.get());
+                auto newVisitor = std::make_shared<CollisionWithBulletVisitor>();
+                allyTank->handleCollision(newVisitor.get());
+            } else if ((dynamic_cast<PlayerBullet *>(obj.get()) ||
+                        dynamic_cast<PlayerFastBullet *>(obj.get()) //  если пуля союзника попала в игрока
+                        || dynamic_cast<PlayerPowerfulBullet *>(obj.get())) &&
+                       !(dynamic_cast<Bullet *>(obj.get())->getIsDestroyed())) {
+                obj->handleCollision(visitor.get());
+            }
+
+            if (dynamic_cast<Tank *>(obj.get())) // столкновение танка врага с танком игрока
+            {
+                obj->handleCollision(visitor.get());
+                allyTank->handleCollision(visitor.get());
                 dynamic_cast<EnemyTank *>(obj.get())->setIsColliding();
             }
         }
@@ -224,7 +285,8 @@ void GameEngine::handleCollisions() {
 
         for (const auto &enemy: enemyTanks) {
             if (obj->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds()) &&
-                obj.get() != enemy.get() && dynamic_cast<Tank *>(obj.get())) {
+                obj.get() != enemy.get() && dynamic_cast<Tank *>(obj.get()))
+            {
                 auto visitor = std::make_shared<CollisionWithTankVisitor>();
                 obj->handleCollision(visitor.get());
                 enemy->handleCollision(visitor.get());
@@ -246,6 +308,16 @@ void GameEngine::handleCollisions() {
             {
                 auto visitor = std::make_shared<CollisionWithMapObjectVisitor>();
                 playerTank->handleCollision(visitor.get());
+            }
+        }
+
+        if (mapObj->getSprite().getGlobalBounds().intersects(allyTank->getSprite().getGlobalBounds())) {
+            if (dynamic_cast<Brick *>(mapObj.get()) ||
+                dynamic_cast<Metal *>(mapObj.get()) ||
+                dynamic_cast<Water *>(mapObj.get()) || dynamic_cast<Eagle *>(mapObj.get())) // через траву можно ездить
+            {
+                auto visitor = std::make_shared<CollisionWithMapObjectVisitor>();
+                allyTank->handleCollision(visitor.get());
             }
         }
 
@@ -284,7 +356,8 @@ void GameEngine::handleCollisions() {
             }
         }
 
-        for (const auto &enemy: enemyTanks) {
+        for (const auto &enemy: enemyTanks)
+        {
             if (mapObj->getSprite().getGlobalBounds().intersects(enemy->getSprite().getGlobalBounds())) {
                 if (dynamic_cast<Brick *>(mapObj.get()) ||
                     dynamic_cast<Metal *>(mapObj.get()) ||
@@ -299,8 +372,10 @@ void GameEngine::handleCollisions() {
         }
     }
 
-    if (bonus != nullptr) {
-        if (bonus->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds())) {
+    if (bonus != nullptr)
+    {
+        if (bonus->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds()) || bonus->getSprite().getGlobalBounds().intersects(allyTank->getSprite().getGlobalBounds()))
+        {
             auto visitor = std::make_shared<CollisionWithTankVisitor>();
             bonus->handleCollision(visitor.get());
         }
@@ -313,6 +388,8 @@ void GameEngine::render() {
     }
 
     playerTank->render(window);
+    if (isTwoPlayers)
+        allyTank->render(window);
 
     for (auto &enemyTank: enemyTanks) {
         enemyTank->render(window);
@@ -374,11 +451,13 @@ void GameEngine::restart() {
     levelNum = 1;
     timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
 
-    playerTank = std::make_shared<PlayerTank>(PLAYER_SPAWN_X * FACTOR, PLAYER_SPAWN_Y * FACTOR, allBullets);
+    playerTank = std::make_shared<PlayerTank>(PLAYER_SPAWN_X * FACTOR, PLAYER_SPAWN_Y * FACTOR, allBullets, false);
+    if (isTwoPlayers)
+        allyTank = std::make_shared<PlayerTank>(ALLY_SPAWN_X * FACTOR, ALLY_SPAWN_Y * FACTOR, allBullets, true);
 
     bonus.reset();
     remainingEnemies = 18;
-    enemiesOnMap = 0;
+    enemiesOnScreen = 0;
     points = 0;
     allBullets.clear();
     enemyTanks.clear();
@@ -401,18 +480,22 @@ void GameEngine::dropBonus() {
 }
 
 void GameEngine::bonusEffect() {
-    if (bonus == nullptr)
-        return;
 
     auto *handlingBonus = dynamic_cast<Bonus *>(bonus.get());
 
     if (!(handlingBonus->getIsPicked()))
         return;
-    else
-        points += BONUS_POINTS;
+
+    points += BONUS_POINTS;
 
     if (handlingBonus->getBonusType() == HELMET)
-        dynamic_cast<PlayerTank *>(playerTank.get())->setIsInvulnerable();
+    {
+        if (bonus->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds()))
+            dynamic_cast<PlayerTank *>(playerTank.get())->setIsInvulnerable();
+        else if (isTwoPlayers)
+                dynamic_cast<PlayerTank *>(allyTank.get())->setIsInvulnerable();
+    }
+
     else if (handlingBonus->getBonusType() == CLOCK) {
         isClockBonusActive = true;
         clockBonusTimer.restart();
@@ -420,19 +503,33 @@ void GameEngine::bonusEffect() {
     {
 
     } else if (handlingBonus->getBonusType() == STAR)
-        dynamic_cast<PlayerTank *>(playerTank.get())->addStar();
+    {
+        if (bonus->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds()))
+            dynamic_cast<PlayerTank *>(playerTank.get())->addStar();
+        else if (isTwoPlayers)
+            dynamic_cast<PlayerTank *>(allyTank.get())->addStar();
+    }
     else if (handlingBonus->getBonusType() == GRENADE) {
-        enemiesOnMap = 0;
+        enemiesOnScreen = 0;
         enemyTanks.clear();
-    } else if (handlingBonus->getBonusType() == TANK) {
-        dynamic_cast<PlayerTank *>(playerTank.get())->addHealth();
+    }
+    else if (handlingBonus->getBonusType() == TANK)
+    {
+        if (bonus->getSprite().getGlobalBounds().intersects(playerTank->getSprite().getGlobalBounds()))
+            dynamic_cast<PlayerTank *>(playerTank.get())->addHealth();
+        else if (isTwoPlayers)
+            dynamic_cast<PlayerTank *>(allyTank.get())->addHealth();
     }
     bonus.reset();
 }
 
-void GameEngine::dropEnemies() {
-    timeBetweenRenderEnemyTank--;
-    if (remainingEnemies != 0 && enemiesOnMap < 4 && timeBetweenRenderEnemyTank <= 0) {
+void GameEngine::dropEnemies()
+{
+    if (enemiesOnScreen != 4)
+        timeBetweenRenderEnemyTank--;
+
+    if (remainingEnemies != 0 && enemiesOnScreen < 4 && timeBetweenRenderEnemyTank <= 0)
+    {
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         std::default_random_engine generator(seed);
         std::uniform_int_distribution<int> distribution(0, 3);
@@ -442,7 +539,8 @@ void GameEngine::dropEnemies() {
 
         std::shared_ptr<IGameObject> enemy;
 
-        if ((enemyWithBonusCounter % 4) == 0) {
+        if ((enemyWithBonusCounter % 4) == 0)
+        {
             enemy = std::make_shared<EnemyTank>(6. * (remainingEnemies % 3) * 16. * FACTOR, 0., allBullets, type,
                                                 true);
             enemyWithBonusCounter = 0;
@@ -452,7 +550,7 @@ void GameEngine::dropEnemies() {
 
         enemyTanks.push_back(enemy);
         remainingEnemies--;
-        enemiesOnMap++;
+        enemiesOnScreen++;
 
         timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
     }
