@@ -2,7 +2,7 @@
 #define GAME_IGAMEOBJECT_H
 
 #include <SFML/Graphics.hpp>
-#include "../IVisitor/IVisitor.h"
+#include "IVisitor.h"
 
 #include <memory>
 

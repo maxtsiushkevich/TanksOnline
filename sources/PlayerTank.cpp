@@ -1,5 +1,5 @@
-#include "Tank.h"
-#include "../Bullet/Bullet.h"
+#include "../headers/Tank.h"
+#include "../headers/Bullet.h"
 #include <cmath>
 
 #define PLAYER_SPAWN_X 64

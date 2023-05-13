@@ -1,4 +1,4 @@
-#include "MapObject.h"
+#include "../headers/MapObject.h"
 
 MapObject::MapObject(float x, float y) : IGameObject(x, y) {
     sprite.setPosition(x, y);

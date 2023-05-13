@@ -1,7 +1,7 @@
 #ifndef GAME_MAPOBJECT_H
 #define GAME_MAPOBJECT_H
 
-#include "../IGameObject/IGameObject.h"
+#include "../headers/IGameObject.h"
 
 extern float FACTOR;
 

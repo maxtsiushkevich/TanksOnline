@@ -1,13 +1,13 @@
-#include "Map.h"
+#include "../headers/Map.h"
 #include <iostream>
 #include <fstream>
 
-#include "../MapObject/MapObject.h"
+#include "../headers/MapObject.h"
 
 void Map::loadMap(std::vector<std::shared_ptr<IGameObject>> &map, int levelNum)
 {
     map.clear();
-    std::string levelFile = "../Levels/level" + std::to_string(levelNum) + ".txt";
+    std::string levelFile = "Levels/level" + std::to_string(levelNum) + ".txt";
 
     std::cout << levelFile << std::endl;
 

@@ -1,4 +1,4 @@
-#include "IGameObject.h"
+#include "../headers/IGameObject.h"
 
 sf::Texture IGameObject::texture;
 

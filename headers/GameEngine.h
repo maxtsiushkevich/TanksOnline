@@ -2,7 +2,7 @@
 #define GAME_GAMEENGINE_H
 
 #include <SFML/Graphics.hpp>
-#include "../IGameObject/IGameObject.h"
+#include "../headers/IGameObject.h"
 #include <memory>
 
 #define FONT_NAME "Font.ttf"

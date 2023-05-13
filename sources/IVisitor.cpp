@@ -1,9 +1,9 @@
-#include "IVisitor.h"
+#include "../headers/IVisitor.h"
 #include <iostream>
-#include "../Tank/Tank.h"
-#include "../Bullet/Bullet.h"
-#include "../MapObject/MapObject.h"
-#include "../Bonus/Bonus.h"
+#include "../headers/Tank.h"
+#include "../headers/Bullet.h"
+#include "../headers/MapObject.h"
+#include "../headers/Bonus.h"
 
 void CollisionWithTankVisitor::visit(PlayerTank &tank)
 {

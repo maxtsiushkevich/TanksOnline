@@ -1,7 +1,7 @@
 #ifndef GAME_MAP_H
 #define GAME_MAP_H
 
-#include "../IGameObject/IGameObject.h"
+#include "../headers/IGameObject.h"
 
 class Map {
 public:

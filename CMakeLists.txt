@@ -6,15 +6,15 @@ find_package(SFML 2.5.1 COMPONENTS graphics audio REQUIRED)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(Game
-        main.cpp
-        Tank/Tank.h
-        IGameObject/IGameObject.h
-        Bullet/Bullet.h
-        IVisitor/IVisitor.h
-        GameEngine/GameEngine.h
-        GameEngine/GameEngine.cpp
-        Tank/Tank.cpp
-        Bullet/Bullet.cpp
-        IVisitor/IVisitor.cpp IGameObject/IGameObject.cpp Map/Map.cpp Map/Map.h MapObject/MapObject.cpp MapObject/MapObject.h Bonus/Bonus.cpp Bonus/Bonus.h Tank/PlayerTank.cpp Tank/EnemyTank.cpp)
+        sources/main.cpp
+        headers/Tank.h
+        headers/IGameObject.h
+        headers/Bullet.h
+        headers/IVisitor.h
+        headers/GameEngine.h
+        sources/GameEngine.cpp
+        sources/Tank.cpp
+        sources/Bullet.cpp
+        sources/IVisitor.cpp sources/IGameObject.cpp sources/Map.cpp headers/Map.h sources/MapObject.cpp headers/MapObject.h sources/Bonus.cpp headers/Bonus.h sources/PlayerTank.cpp sources/EnemyTank.cpp sources/main.cpp sources/main.cpp)
 
 target_link_libraries(Game sfml-graphics sfml-audio)

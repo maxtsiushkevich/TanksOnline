@@ -1,7 +1,7 @@
 #ifndef GAME_BONUS_H
 #define GAME_BONUS_H
 
-#include "../IGameObject/IGameObject.h"
+#include "../headers/IGameObject.h"
 
 extern float FACTOR;
 

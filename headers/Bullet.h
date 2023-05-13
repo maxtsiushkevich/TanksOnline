@@ -6,8 +6,8 @@
 #define ENEMY_BULLET_SPEED 90.f
 #define ENEMY_FAST_BULLET_SPEED 180.f
 
-#include "../IGameObject/IGameObject.h"
-#include "../Tank/Tank.h"
+#include "../headers/IGameObject.h"
+#include "../headers/Tank.h"
 
 class Bullet : public IGameObject {
 protected:

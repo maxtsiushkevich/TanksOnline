@@ -1,9 +1,9 @@
-#include "GameEngine.h"
-#include "../Tank/Tank.h"
-#include "../Bullet/Bullet.h"
-#include "../Map/Map.h"
-#include "../MapObject/MapObject.h"
-#include "../Bonus/Bonus.h"
+#include "../headers/GameEngine.h"
+#include "../headers/Tank.h"
+#include "../headers/Bullet.h"
+#include "../headers/Map.h"
+#include "../headers/MapObject.h"
+#include "../headers/Bonus.h"
 
 #include <random>
 #include <chrono>

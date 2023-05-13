@@ -1,4 +1,4 @@
-#include "Bonus.h"
+#include "../headers/Bonus.h"
 
 Bonus::Bonus(float x, float y, int type) : IGameObject(x, y) {
     isPicked = false;

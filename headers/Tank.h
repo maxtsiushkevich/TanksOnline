@@ -1,7 +1,7 @@
 #ifndef GAME_TANK_H
 #define GAME_TANK_H
 
-#include "../IGameObject/IGameObject.h"
+#include "../headers/IGameObject.h"
 
 #include <iostream>
 

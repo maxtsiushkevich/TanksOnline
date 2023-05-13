@@ -1,8 +1,8 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include "GameEngine/GameEngine.h"
+#include "../headers/GameEngine.h"
 
-#include "MapObject/MapObject.h"
+#include "../headers/MapObject.h"
 
 float FACTOR = 5.f;
 
