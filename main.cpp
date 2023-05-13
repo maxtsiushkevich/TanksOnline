@@ -14,7 +14,8 @@ int main()
     window.setFramerateLimit(45);
 
     GameEngine engine(window);
-    engine.init(true);
+    //engine.init(true);
+    engine.init(false);
 
     while (window.isOpen())
     {

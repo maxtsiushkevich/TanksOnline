@@ -55,6 +55,9 @@ public:
     ~GameEngine() = default;
     void init(bool isTwoPlayers);
     void update();
+    void updateEnemies(float seconds);
+    void updateBullets(float seconds);
+    void endInfo();
     void handleCollisions();
     void togglePause();
     void render();

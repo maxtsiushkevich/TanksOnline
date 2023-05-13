@@ -7,7 +7,7 @@
 
 #define TANK_SPEED 45.f
 #define ENEMY_TANK_SPEED 45.f
-#define CARRIER_SPEED 90.f
+#define CARRIER_SPEED 400.f
 #define INVULNERABLE_TIME 5.f
 #define DELAY_BEFORE_SHOOT 1.f
 
@@ -67,6 +67,9 @@ public:
     bool getIsInvulnerable() const;
     void addHealth();
     void setIsInvulnerable();
+
+    void setX(float x);
+    void setY(float y);
 };
 
 class EnemyTank : public Tank

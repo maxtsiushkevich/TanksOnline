@@ -17,7 +17,7 @@ EnemyTank::EnemyTank(float x, float y, std::vector<std::shared_ptr<IGameObject>>
     this->type = static_cast<EnemyType>(type);
 
     if (this->type == EnemyCarrier)
-        speed = CARRIER_SPEED;
+        this->speed = CARRIER_SPEED;
 
     if (this->type == EnemyHeavyTank)
         health = 4;
@@ -34,9 +34,9 @@ EnemyTank::EnemyTank(float x, float y, std::vector<std::shared_ptr<IGameObject>>
 
 void EnemyTank::update(float time) {
     this->time = time;
-    float distance = speed * time;
+    float distance = this->speed * time;
     if (canShoot && (delayBeforeShoot.getElapsedTime().asSeconds() > DELAY_BEFORE_SHOOT)) {
-    //    this->shoot();
+       this->shoot();
     }
 
     this->move(distance);
@@ -66,6 +66,7 @@ void EnemyTank::move(float distance) {
         dx = round(dx / (8 * FACTOR)) * (8 * FACTOR);
         dy = round(dy / (8 * FACTOR)) * (8 * FACTOR);
 
+        sprite.setPosition(dx, dy);
         // Генерируем случайное число
         randDest = distribution(generator);
         move(distance);

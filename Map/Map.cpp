@@ -54,7 +54,7 @@ void Map::loadMap(std::vector<std::shared_ptr<IGameObject>> &map, int levelNum)
     file.close();
 }
 
-void Map::update(std::vector<std::shared_ptr<IGameObject>> &map) // проблема где-то тут
+void Map::update(std::vector<std::shared_ptr<IGameObject>> &map)
 {
     for (auto it = map.begin(); it != map.end(); )
     {

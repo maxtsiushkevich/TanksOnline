@@ -2,6 +2,13 @@
 #include "../Bullet/Bullet.h"
 #include <cmath>
 
+#define PLAYER_SPAWN_X 64
+#define PLAYER_SPAWN_Y 192
+
+#define ALLY_SPAWN_X 128
+#define ALLY_SPAWN_Y 192
+
+
 PlayerTank::PlayerTank(float x, float y, std::vector<std::shared_ptr<IGameObject>> &allBullets, bool isAllyTank) : Tank(x, y,
                                                                                                        TANK_SPEED, 3,
                                                                                                        allBullets),
@@ -26,8 +33,15 @@ void PlayerTank::reset() {
     health--;
     if (health == 0)
         isDestroyed = true;
-    dx = 64 * FACTOR;
-    dy = 192 * FACTOR;
+    if (isAllyTank)
+    {
+        dx = ALLY_SPAWN_X * FACTOR;
+        dy = ALLY_SPAWN_Y * FACTOR;
+    }
+    else {
+        dx = PLAYER_SPAWN_X * FACTOR;
+        dy = PLAYER_SPAWN_Y * FACTOR;
+    }
     stars = 0;
     sprite.setTextureRect(sf::IntRect(0, 16 * stars, 16, 16));
     sprite.setPosition(dx, dy);
@@ -79,21 +93,24 @@ void PlayerTank::shoot()
     switch (stars) {
         case 0:
             bullet = std::make_shared<PlayerBullet>(dx, dy, tankDestination, shared_from_this());
+            canShoot = false;
             break;
         case 1:
             bullet = std::make_shared<PlayerFastBullet>(dx, dy, tankDestination, shared_from_this());
+            canShoot = false;
             break;
         case 2:
+            bullet = std::make_shared<PlayerBullet>(dx, dy, tankDestination, shared_from_this());
+            break;
             // очередь
         case 3:
             bullet = std::make_shared<PlayerPowerfulBullet>(dx, dy, tankDestination, shared_from_this());
+            canShoot = false;
             break;
     }
 
-    if (bullet) {
+    if (bullet)
         allBullets.emplace_back(std::move(bullet));
-        canShoot = false;
-    }
 }
 
 
@@ -185,3 +202,6 @@ void PlayerTank::setIsInvulnerable() {
 bool PlayerTank::getIsInvulnerable() const { return isInvulnerable; }
 
 void PlayerTank::addHealth() { health++; }
+
+void PlayerTank::setX(float x) { dx = x; }
+void PlayerTank::setY(float y) { dy = y; }
