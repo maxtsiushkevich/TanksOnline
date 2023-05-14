@@ -44,7 +44,7 @@ private:
 public:
     GameEngine(sf::RenderWindow &window) : window(window) {}
     ~GameEngine() = default;
-    void init(bool isTwoPlayers);
+    void init(bool isTwoPlayers, bool isOnline);
     void update();
     void updateEnemies(float seconds);
     void updateBullets(float seconds);

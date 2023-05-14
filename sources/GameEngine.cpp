@@ -23,7 +23,7 @@
 
 #define BONUS_POINTS 500
 
-void GameEngine::init(bool isTwoPlayers) {
+void GameEngine::init(bool isTwoPlayers, bool isOnline) {
 
     this->isTwoPlayers = isTwoPlayers;
     isPaused = false;

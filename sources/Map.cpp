@@ -13,8 +13,10 @@ void Map::loadMap(std::vector<std::shared_ptr<IGameObject>> &map, int levelNum)
 
     std::ifstream file(levelFile);
 
-    if (!file.is_open())
+    if (!file.is_open()) {
         std::cout << "Не удалось открыть файл!" << std::endl;
+        exit(0);
+    }
 
     float x = 0;
     float y = 0;
