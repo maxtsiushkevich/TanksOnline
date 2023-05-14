@@ -18,37 +18,28 @@ private:
 
     sf::RenderWindow &window;
     sf::Texture mainTexture;
+    sf::Sprite hud;
+    sf::Clock timeBetweenFrames;
+    sf::Clock clockBonusTimer;
 
     std::shared_ptr<IGameObject> playerTank;
     std::shared_ptr<IGameObject> allyTank;
-
     std::vector<std::shared_ptr<IGameObject>> map;
-
     std::shared_ptr<IGameObject> bonus;
-
     std::vector<std::shared_ptr<IGameObject>> allBullets;
-
     std::vector<std::shared_ptr<IGameObject>> enemyTanks;
-
-    sf::Sprite hud;
-
     int points;
+    bool isPaused;
+    bool isFlagFallen;
+    bool isTwoPlayers;
 
     int enemiesOnScreen;
     int remainingEnemies;
-
     int timeBetweenRenderEnemyTank;
 
-    bool isPaused;
-    sf::Clock timeBetweenFrames;
-
-    sf::Clock clockBonusTimer;
     bool isClockBonusActive;
-
     int enemyWithBonusCounter;
     int levelNum;
-    bool isFlagFallen;
-    bool isTwoPlayers;
 
 public:
     GameEngine(sf::RenderWindow &window) : window(window) {}

@@ -4,7 +4,8 @@
 
 #include "../headers/MapObject.h"
 
-float FACTOR = 5.f;
+float FACTOR = 2.f;
+
 
 int main()
 {
@@ -20,14 +21,15 @@ int main()
     while (window.isOpen())
     {
         sf::Event event;
-        while (window.pollEvent(event)) {
+        while (window.pollEvent(event))
+        {
             if (event.type == sf::Event::Closed)
                 window.close();
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
                 engine.togglePause();
         }
 
-        //window.clear(sf::Color::White);
+
         window.clear();
 
         engine.update();
@@ -41,15 +43,18 @@ int main()
 }
 
 
+
+
+
 //#include <SFML/Graphics.hpp>
 //#include <iostream>
 //#include <vector>
 //
 //int main() {
-//    sf::RenderWindow window(sf::VideoMode(800, 600), "Menu");
+//    sf::RenderWindow window(sf::VideoMode(800, 600), "Tanks Online");
 //    window.setFramerateLimit(60);
 //
-//    std::vector<std::string> menuItems = {"Start Game", "Options", "Exit"};
+//    std::vector<std::string> menuItems = {"1 PLAYER", "2 PLAYERS", "ONLINE"};
 //    int selectedItemIndex = 0;
 //
 //    sf::Font font;
@@ -68,9 +73,12 @@ int main()
 //    while (window.isOpen()) {
 //        sf::Event event;
 //        while (window.pollEvent(event)) {
-//            if (event.type == sf::Event::Closed) {
+//            if (event.type == sf::Event::Closed)
+//            {
 //                window.close();
-//            } else if (event.type == sf::Event::KeyPressed) {
+//            }
+//            else if (event.type == sf::Event::KeyPressed)
+//            {
 //                if (event.key.code == sf::Keyboard::Up) {
 //                    if (selectedItemIndex > 0) {
 //                        menuTexts[selectedItemIndex].setColor(sf::Color::White);
@@ -86,13 +94,10 @@ int main()
 //                } else if (event.key.code == sf::Keyboard::Return) {
 //                    switch (selectedItemIndex) {
 //                        case 0:
-//                            std::cout << "Starting game..." << std::endl;
 //                            break;
 //                        case 1:
-//                            std::cout << "Opening options menu..." << std::endl;
 //                            break;
 //                        case 2:
-//                            window.close();
 //                            break;
 //                    }
 //                }
