@@ -24,6 +24,7 @@ enum EnemyType
 class Bullet;
 
 class Tank : public IGameObject {
+    friend class GameState;
 protected:
     Destination tankDestination;
     int health;
@@ -44,9 +45,24 @@ public:
     float getSpeed() const;
     int getHealths() const;
     void decrementAnimation();
+
+//    friend class boost::serialization::access;
+//    template<class Archive>
+//    void serialize(Archive & ar, const unsigned int version)
+//    {
+//        IGameObject::serialize(ar, version);
+//        ar & tankDestination;
+//        ar & health;
+//        ar & animation;
+//        ar & canShoot;
+//        ar & speed;
+//        ar & time;
+//    }
 };
 
-class PlayerTank : public Tank {
+class PlayerTank : public Tank
+        {
+    friend class GameState;
 protected:
     bool isInvulnerable;
     Destination previousButton;
@@ -70,10 +86,24 @@ public:
 
     void setX(float x);
     void setY(float y);
+
+//    friend class boost::serialization::access;
+//    template<class Archive>
+//    void serialize(Archive & ar, const unsigned int version)
+//    {
+//        Tank::serialize(ar, version);
+//        ar & isInvulnerable;
+//        ar & previousButton;
+//        ar & isShootButtonPressed;
+//        ar & stars;
+//        ar & speed;
+//        ar & isAllyTank;
+//    }
 };
 
 class EnemyTank : public Tank
 {
+    friend class GameState;
 protected:
     bool isColliding;
     EnemyType type;
@@ -92,6 +122,17 @@ public:
     void enableShooting() override;
     bool getIsBonusTank() const;
     int getType() const;
+
+//    friend class boost::serialization::access;
+//    template<class Archive>
+//    void serialize(Archive & ar, const unsigned int version)
+//    {
+//        Tank::serialize(ar, version);
+//        ar & isColliding;
+//        ar & type;
+//        ar & randDest;
+//        ar & isBonusTank;
+//    }
 };
 
 #endif

@@ -6,12 +6,13 @@
 extern float FACTOR;
 
 class MapObject : public IGameObject {
-protected:
+    friend class GameState;
 public:
     MapObject(float x, float y);
 };
 
 class Brick : public MapObject {
+    friend class GameState;
 public:
     Brick(float x, float y);
     void update(float time) override;
@@ -21,7 +22,7 @@ public:
 };
 
 class Metal : public MapObject {
-protected:
+    friend class GameState;
 public:
     Metal(float x, float y);
     void update(float time) override;
@@ -30,6 +31,7 @@ public:
 };
 
 class Water : public MapObject {
+    friend class GameState;
 public:
     Water(float x, float y);
     void update(float time) override;
@@ -38,6 +40,7 @@ public:
 };
 
 class Grass : public MapObject {
+    friend class GameState;
 public:
     Grass(float x, float y);
     void update(float time) override;
@@ -47,6 +50,7 @@ public:
 
 class Eagle : public MapObject
 {
+    friend class GameState;
 protected:
     bool isFallen;
 public:

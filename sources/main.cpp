@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include "../headers/GameEngine.h"
 
-#include "../headers/MapObject.h"
 
 float FACTOR = 5.f;
 
@@ -105,7 +104,7 @@ int main()
             engine.init(true, false);
             break;
         case 2:
-            engine.init(false, true);
+            engine.init(true, true);
             break;
         default:
             exit(0);
@@ -124,6 +123,7 @@ int main()
 
 
         window.clear();
+        //window.clear(sf::Color::White);
 
         engine.update();
         engine.handleCollisions();
@@ -134,5 +134,7 @@ int main()
     engine.end();
     return 0;
 }
+
+
 
 
