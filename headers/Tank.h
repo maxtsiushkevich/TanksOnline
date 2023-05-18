@@ -2,12 +2,11 @@
 #define GAME_TANK_H
 
 #include "../headers/IGameObject.h"
-
 #include <iostream>
 
 #define TANK_SPEED 45.f
 #define ENEMY_TANK_SPEED 45.f
-#define CARRIER_SPEED 400.f
+#define CARRIER_SPEED 300.f
 #define INVULNERABLE_TIME 5.f
 #define DELAY_BEFORE_SHOOT 1.f
 

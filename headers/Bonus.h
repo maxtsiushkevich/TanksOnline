@@ -2,10 +2,9 @@
 #define GAME_BONUS_H
 
 #include "../headers/IGameObject.h"
+#include <iostream>
 
 extern float FACTOR;
-
-#include <iostream>
 
 enum BonusType
 {
@@ -40,8 +39,6 @@ public:
 //        ar & type;
 //        ar & isPicked;
 //    }
-
-
 };
 
 

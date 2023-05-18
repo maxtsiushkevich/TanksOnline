@@ -1,25 +1,20 @@
 #include "../headers/GameEngine.h"
-
+#include <pthread.h>
+#include <cstdlib>
+#include <unistd.h>
 #include <fstream>
-
 #include <random>
 #include <chrono>
 
 #define PLAYER_SPAWN_X 64
 #define PLAYER_SPAWN_Y 192
-
 #define ALLY_SPAWN_X 128
 #define ALLY_SPAWN_Y 192
-
-
-#define TIME_BETWEEN_RENDER_ENEMY_TANK 90
+#define TIME_BETWEEN_RENDER_ENEMY_TANK 150
 #define MAX_LEVEL_NUM 30
 #define ENEMIES_ON_LEVEL 18
-
 #define CLOCK_BONUS_TIME 15
-
 #define BONUS_POINTS 500
-
 #define PORT 6005
 
 void GameEngine::init(bool isTwoPlayers, bool isOnline) {
@@ -39,11 +34,11 @@ void GameEngine::init(bool isTwoPlayers, bool isOnline) {
 
     timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
 
-    gameState.playerTank = std::make_shared<PlayerTank>(PLAYER_SPAWN_X * FACTOR, PLAYER_SPAWN_Y * FACTOR,
-                                                        gameState.allBullets, false);
+    gameState.playerTank1 = std::make_shared<PlayerTank>(PLAYER_SPAWN_X * FACTOR, PLAYER_SPAWN_Y * FACTOR,
+                                                         gameState.allBullets, false);
     if (isTwoPlayers)
-        gameState.allyTank = std::make_shared<PlayerTank>(ALLY_SPAWN_X * FACTOR, ALLY_SPAWN_Y * FACTOR,
-                                                          gameState.allBullets, true);
+        gameState.playerTank2 = std::make_shared<PlayerTank>(ALLY_SPAWN_X * FACTOR, ALLY_SPAWN_Y * FACTOR,
+                                                             gameState.allBullets, true);
 
     gameState.remainingEnemies = ENEMIES_ON_LEVEL;
     enemiesOnScreen = 0;
@@ -53,13 +48,36 @@ void GameEngine::init(bool isTwoPlayers, bool isOnline) {
     hud.setPosition(13 * 16 * FACTOR, 0);
     hud.setScale(FACTOR, FACTOR);
 
+    isServer = true;
+    isClient = false;
+
     if (isOnline)
+    {
         connect();
+
+
+        int tmp = 0;
+        if (isServer)
+            tmp = pthread_create(&thread, nullptr, reinterpret_cast<void *(*)(void *)>(serverAction), nullptr);
+        else if (isClient)
+            tmp = pthread_create(&thread, nullptr, reinterpret_cast<void *(*)(void *)>(clientAction), nullptr);
+
+        if (tmp != 0)
+        {
+            std::cout << "Create consumer error" << std::endl;
+            exit(1);
+        }
+
+        if (pthread_mutex_init(&mutex, nullptr)) {
+            std::cout << "Mutex init error" << std::endl;
+            exit(1);
+        }
+        return;
+    }
 
 }
 
-void GameEngine::connect()
-{
+void GameEngine::connect() {
     while (1)
     {
         window.clear();
@@ -68,84 +86,115 @@ void GameEngine::connect()
         text.setPosition(20 * FACTOR, 20 * FACTOR);
         window.draw(text);
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
             // показывается ip и ждется подключение
             std::string ip = multiplayer.getIpFromStruct();
 
             while (1)
             {
                 window.clear();
+
                 sf::Text text1(ip + "\n\nEnter this IP at the client computer", font, 6 * FACTOR);
                 text1.setPosition(20 * FACTOR, 20 * FACTOR);
                 window.draw(text1);
-
-
                 window.display();
 
                 sf::Event event;
                 while (window.pollEvent(event))
                 {
-                    if (event.type == sf::Event::Closed) {
+                    if (event.type == sf::Event::Closed){
+                        window.close();
+                        exit(0);
+                    }
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
                         window.close();
                         exit(0);
                     }
                     if (multiplayer.serverInit(PORT))
-                    {
-                        sf::Text text1("Connection...", font, 6 * FACTOR);
-                        text1.setPosition(400 * FACTOR, 40 * FACTOR);
-                        window.draw(text1);
-                        window.display();
-                        sleep(5);
-                        break;
-                    }
+                        return;
                 }
                 break;
             }
+            isServer = true;
+            isClient = false;
         }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
-        {
-            // показывается поле ввода, где можно ввести IP сервера, к которому подключаться
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {
+
             std::string ip;
             sf::Text text(ip, font, 6 * FACTOR);
-            text.setPosition(20 * FACTOR, 20 * FACTOR);
+            text.setPosition(20 * FACTOR, 40 * FACTOR);
+
             while (1)
             {
                 window.clear();
-                sf::Text text1("Enter server IP: \n\n", font, 6 * FACTOR);
+                sf::Text text1("Enter server IP: ", font, 6 * FACTOR);
                 text1.setPosition(20 * FACTOR, 20 * FACTOR);
                 window.draw(text1);
-
                 text.setString(ip);
                 window.draw(text);
 
                 window.display();
 
                 sf::Event event;
+
                 while (window.pollEvent(event))
                 {
                     if (event.type == sf::Event::Closed) {
                         window.close();
                         exit(0);
                     }
-                    if (event.type == sf::Event::TextEntered)
-                    {
+                    if (event.type == sf::Event::TextEntered) {
                         if (event.text.unicode == 8 && ip.size() > 0) // обработка нажатия backspace
                             ip.erase(ip.size() - 1, 1);
-                        else if (event.text.unicode < 128 && event.text.unicode != 13) // только ASCII символы, кроме Enter
+                        else if (event.text.unicode < 128 &&
+                                 event.text.unicode != 13) // только ASCII символы, кроме Enter
                             ip += static_cast<char>(event.text.unicode);
                         text.setString(ip);
                     }
                     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
                     {
-                        if (multiplayer.clientInit(ip, PORT))
-                            break;
-                        else {
+                        if (!ip.empty() && ip[0] == '\n')
+                            ip.erase(0, 1);
+
+                        struct in_addr addr;
+                        std::cout << ip << std::endl;
+                        int result = inet_pton(AF_INET, ip.c_str(), &addr);
+                        if (result == 1) {
+                            sf::Text text2("Valid IP address", font, 6 * FACTOR);
+                            text2.setPosition(20 * FACTOR, 80 * FACTOR);
+                            window.draw(text2);
+                            window.display();
+                            sleep(2);
+                        } else if (result == 0) {
                             sf::Text text2("Connection error. Wrong IP.", font, 6 * FACTOR);
                             text2.setPosition(20 * FACTOR, 80 * FACTOR);
                             window.draw(text2);
                             window.display();
-                            sleep(3);
+                            ip.clear();
+                            sleep(2);
+                            continue;
+                        } else {
+                            sf::Text text2("Error checking IP address", font, 6 * FACTOR);
+                            text2.setPosition(20 * FACTOR, 80 * FACTOR);
+                            window.draw(text2);
+                            window.display();
+                            ip.clear();
+                            sleep(2);
+                            continue;
+                        }
+
+                        if (multiplayer.clientInit(ip, PORT))
+                        {
+                            isServer = false;
+                            isClient = true;
+                            return;
+                        } else
+                        {
+                            sf::Text text2("Connection error.", font, 6 * FACTOR);
+                            text2.setPosition(20 * FACTOR, 80 * FACTOR);
+                            window.draw(text2);
+                            window.display();
+                            sleep(2);
                             continue;
                         }
                     }
@@ -175,98 +224,120 @@ void GameEngine::update() {
 //    ia >> newGameState;
 //    ifile.close();*/
 
-    // захватываем мьютекс
-    if (!gameState.isPaused) {
-        if (isFlagFallen) {
-            endInfo();
-            restart();
-            // освобождаем мьютекс
-            return;
-        }
+    //pthread_mutex_lock(&mutex);
+    // захватываем мьютек
 
-        if (gameState.remainingEnemies == 0 && enemiesOnScreen == 0) {
-            while (1) {
-                window.clear();
+    if (!gameState.isPaused)
+    {
+        //if (isServer)
+        //{
 
-                std::string infoString = "Level complete!\n\n"
-                                         "Your score is " + std::to_string(gameState.points)
-                                         + "\n\nPress 'Enter' to continue";
-                sf::Text text(infoString, font, 6 * FACTOR);
-                text.setPosition(100, 100);
-
-                window.draw(text);
-
-                window.display();
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-                    break;
+            if (isFlagFallen) {
+                endInfo();
+                restart();
+                // освобождаем мьютекс
+                //pthread_mutex_unlock(&mutex);
+                return;
             }
-            levelNum++;
-            if (levelNum == MAX_LEVEL_NUM + 1)
-                levelNum = 1;
-            Map::loadMap(gameState.map, levelNum);
-            gameState.remainingEnemies = ENEMIES_ON_LEVEL;
-            enemiesOnScreen = 0; // тут окно с очками за уровень
-            timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
-            gameState.bonus.reset(); // установить танки на начальные позиции + неуязвимость
 
-            dynamic_cast<PlayerTank *>(gameState.playerTank.get())->setX(PLAYER_SPAWN_X * FACTOR);
-            dynamic_cast<PlayerTank *>(gameState.playerTank.get())->setY(PLAYER_SPAWN_Y * FACTOR);
-            dynamic_cast<PlayerTank *>(gameState.playerTank.get())->setIsInvulnerable();
+            if (gameState.remainingEnemies == 0 && enemiesOnScreen == 0) {
+                while (1) {
+                    window.clear();
 
-            if (isTwoPlayers) {
-                dynamic_cast<PlayerTank *>(gameState.allyTank.get())->setX(ALLY_SPAWN_X * FACTOR);
-                dynamic_cast<PlayerTank *>(gameState.allyTank.get())->setY(ALLY_SPAWN_Y * FACTOR);
-                dynamic_cast<PlayerTank *>(gameState.allyTank.get())->setIsInvulnerable();
+                    std::string infoString = "Level complete!\n\n"
+                                             "Your score is " + std::to_string(gameState.points)
+                                             + "\n\nPress 'Enter' to continue";
+                    sf::Text text(infoString, font, 6 * FACTOR);
+                    text.setPosition(100, 100);
+
+                    window.draw(text);
+
+                    window.display();
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+                        break;
+                }
+                levelNum++;
+                if (levelNum == MAX_LEVEL_NUM + 1)
+                    levelNum = 1;
+                Map::loadMap(gameState.map, levelNum);
+                gameState.remainingEnemies = ENEMIES_ON_LEVEL;
+                enemiesOnScreen = 0; // тут окно с очками за уровень
+                timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
+                gameState.bonus.reset(); // установить танки на начальные позиции + неуязвимость
+
+                dynamic_cast<PlayerTank *>(gameState.playerTank1.get())->setX(PLAYER_SPAWN_X * FACTOR);
+                dynamic_cast<PlayerTank *>(gameState.playerTank1.get())->setY(PLAYER_SPAWN_Y * FACTOR);
+                dynamic_cast<PlayerTank *>(gameState.playerTank1.get())->setIsInvulnerable();
+
+                if (isTwoPlayers) {
+                    dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->setX(ALLY_SPAWN_X * FACTOR);
+                    dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->setY(ALLY_SPAWN_Y * FACTOR);
+                    dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->setIsInvulnerable();
+                }
+                // освобождаем мьютекс
+                //pthread_mutex_unlock(&mutex);
+                return;
             }
-            // освобождаем мьютекс
-            return;
-        }
 
-        if (gameState.bonus != nullptr)
-            bonusEffect();
+            if (gameState.bonus != nullptr)
+                bonusEffect();
 
-        if (gameState.playerTank.use_count() != 0) {
-            if (dynamic_cast<Tank *>(gameState.playerTank.get())->getHealths() == 0) {
-                gameState.playerTank.reset();
+            if (gameState.playerTank1.use_count() != 0) {
+                if (dynamic_cast<Tank *>(gameState.playerTank1.get())->getHealths() == 0) {
+                    gameState.playerTank1.reset();
+
+                }
             }
-        }
 
-        if (isTwoPlayers && !isOnline) {
-            if (gameState.allyTank.use_count() != 0) {
-                if (dynamic_cast<Tank *>(gameState.allyTank.get())->getHealths() == 0)
-                    gameState.allyTank.reset();
+            if (isTwoPlayers && !isOnline) {
+                if (gameState.playerTank2.use_count() != 0) {
+                    if (dynamic_cast<Tank *>(gameState.playerTank2.get())->getHealths() == 0)
+                        gameState.playerTank2.reset();
+                }
             }
-        }
 
-        if (gameState.playerTank.use_count() == 0 && gameState.allyTank.use_count() == 0) {
-            endInfo();
-            restart();
-            // освобождаем мьютекс
-            return;
-        }
+            if (gameState.playerTank1.use_count() == 0 && gameState.playerTank2.use_count() == 0) {
+                endInfo();
+                restart();
+                // освобождаем мьютекс
+                //pthread_mutex_unlock(&mutex);
+                return;
+            }
 
-        dropEnemies();
+            dropEnemies();
 
-        sf::Time time = timeBetweenFrames.restart();
-        float seconds = time.asSeconds();
+            sf::Time time = timeBetweenFrames.restart();
+            float seconds = time.asSeconds();
 
-        Map::update(gameState.map);
+            Map::update(gameState.map);
 
-        updateEnemies(seconds);
+            updateEnemies(seconds);
 
-        if (clockBonusTimer.getElapsedTime().asSeconds() > CLOCK_BONUS_TIME && isClockBonusActive)
-            isClockBonusActive = false;
+            if (clockBonusTimer.getElapsedTime().asSeconds() > CLOCK_BONUS_TIME && isClockBonusActive)
+                isClockBonusActive = false;
 
-        if (gameState.playerTank.use_count() != 0) {
-            gameState.playerTank->update(seconds);
-            if (isTwoPlayers && (gameState.allyTank.use_count() != 0) && !isOnline)
-                gameState.allyTank->update(seconds);
-        }
+            if (gameState.playerTank1.use_count() != 0) {
+                gameState.playerTank1->update(seconds);
+                if (isTwoPlayers && (gameState.playerTank2.use_count() != 0) && !isOnline)
+                    gameState.playerTank2->update(seconds);
+            }
 
-        updateBullets(seconds);
-    } else
+            updateBullets(seconds);
+
+        //}
+        //else if (isClient)
+        //{
+        //    sf::Time time = timeBetweenFrames.restart();
+        //    float seconds = time.asSeconds();
+        //    if (gameState.playerTank1.use_count() != 0)
+        //        gameState.playerTank1->update(seconds);
+        //}
+    }
+    else
         timeBetweenFrames.restart();
-    // освобождаем мьютекс
+
+    //pthread_mutex_unlock(&mutex);
+
 }
 
 void GameEngine::endInfo() {
@@ -330,24 +401,29 @@ void GameEngine::updateBullets(float seconds) {
 }
 
 void GameEngine::handleCollisions() {
+
+    //pthread_mutex_lock(&mutex);
+
     std::vector<std::shared_ptr<IGameObject>> allObjects;
     allObjects.insert(allObjects.end(), gameState.enemyTanks.begin(), gameState.enemyTanks.end());
     allObjects.insert(allObjects.end(), gameState.allBullets.begin(), gameState.allBullets.end());
 
-    if (gameState.playerTank.use_count() != 0 && gameState.allyTank.use_count() != 0) {
-        if (gameState.playerTank->getSprite().getGlobalBounds().intersects(
-                gameState.allyTank->getSprite().getGlobalBounds())) {
+    if (gameState.playerTank1.use_count() != 0 && gameState.playerTank2.use_count() != 0) {
+        if (gameState.playerTank1->getSprite().getGlobalBounds().intersects(
+                gameState.playerTank2->getSprite().getGlobalBounds())) {
             auto visitor = std::make_shared<CollisionWithTankVisitor>();
-            gameState.playerTank->handleCollision(visitor.get());
-            gameState.allyTank->handleCollision(visitor.get());
+            gameState.playerTank1->handleCollision(visitor.get());
+            gameState.playerTank2->handleCollision(visitor.get());
         }
     }
 
     for (const auto &obj: allObjects) // идем по объединенному вектору танков врагов и всех пуль
     {
-        if (gameState.playerTank.use_count() != 0) {
+        if (gameState.playerTank1.use_count() != 0)
+            //if (gameState.playerTank1.use_count() != 0 && !gameState.playerTank1->getIsDestroyed())
+        {
             if (obj->getSprite().getGlobalBounds().intersects(
-                    gameState.playerTank->getSprite().getGlobalBounds())) // обработка коллизии танка врага или пули с танком игрока
+                    gameState.playerTank1->getSprite().getGlobalBounds())) // обработка коллизии танка врага или пули с танком игрока
             {
 
                 auto visitor = std::make_shared<CollisionWithTankVisitor>();
@@ -357,7 +433,7 @@ void GameEngine::handleCollisions() {
                 {
                     obj->handleCollision(visitor.get());
                     auto newVisitor = std::make_shared<CollisionWithBulletVisitor>();
-                    gameState.playerTank->handleCollision(newVisitor.get());
+                    gameState.playerTank1->handleCollision(newVisitor.get());
                 } else if ((dynamic_cast<PlayerBullet *>(obj.get()) ||
                             dynamic_cast<PlayerFastBullet *>(obj.get()) //  если пуля союзника попала в игрока
                             || dynamic_cast<PlayerPowerfulBullet *>(obj.get())) &&
@@ -368,15 +444,17 @@ void GameEngine::handleCollisions() {
                 if (dynamic_cast<Tank *>(obj.get())) // столкновение танка врага с танком игрока
                 {
                     obj->handleCollision(visitor.get());
-                    gameState.playerTank->handleCollision(visitor.get());
+                    gameState.playerTank1->handleCollision(visitor.get());
                     dynamic_cast<EnemyTank *>(obj.get())->setIsColliding();
                 }
             }
         }
 
-        if (gameState.allyTank.use_count() != 0) {
+        if (gameState.playerTank2.use_count() != 0)
+            // if (gameState.playerTank2.use_count() != 0 && !gameState.playerTank2->getIsDestroyed())
+        {
             if (obj->getSprite().getGlobalBounds().intersects(
-                    gameState.allyTank->getSprite().getGlobalBounds())) // обработка коллизии танка врага или пули с танком игрока
+                    gameState.playerTank2->getSprite().getGlobalBounds())) // обработка коллизии танка врага или пули с танком игрока
             {
 
                 auto visitor = std::make_shared<CollisionWithTankVisitor>();
@@ -386,7 +464,7 @@ void GameEngine::handleCollisions() {
                 {
                     obj->handleCollision(visitor.get());
                     auto newVisitor = std::make_shared<CollisionWithBulletVisitor>();
-                    gameState.allyTank->handleCollision(newVisitor.get());
+                    gameState.playerTank2->handleCollision(newVisitor.get());
                 } else if ((dynamic_cast<PlayerBullet *>(obj.get()) ||
                             dynamic_cast<PlayerFastBullet *>(obj.get()) //  если пуля союзника попала в игрока
                             || dynamic_cast<PlayerPowerfulBullet *>(obj.get())) &&
@@ -397,7 +475,7 @@ void GameEngine::handleCollisions() {
                 if (dynamic_cast<Tank *>(obj.get())) // столкновение танка врага с танком игрока
                 {
                     obj->handleCollision(visitor.get());
-                    gameState.allyTank->handleCollision(visitor.get());
+                    gameState.playerTank2->handleCollision(visitor.get());
                     dynamic_cast<EnemyTank *>(obj.get())->setIsColliding();
                 }
             }
@@ -454,28 +532,32 @@ void GameEngine::handleCollisions() {
 
     for (const auto &mapObj: gameState.map) // обработка столкновений танка игрока с объектами на карте
     {
-        if (gameState.playerTank.use_count() != 0) {
-            if (mapObj->getSprite().getGlobalBounds().intersects(gameState.playerTank->getSprite().getGlobalBounds())) {
+        if (gameState.playerTank1.use_count() != 0)
+            //if (!gameState.playerTank1->getIsDestroyed() && gameState.playerTank1.use_count() != 0)
+        {
+            if (mapObj->getSprite().getGlobalBounds().intersects(gameState.playerTank1->getSprite().getGlobalBounds())) {
                 if (dynamic_cast<Brick *>(mapObj.get()) ||
                     dynamic_cast<Metal *>(mapObj.get()) ||
                     dynamic_cast<Water *>(mapObj.get()) ||
                     dynamic_cast<Eagle *>(mapObj.get())) // через траву можно ездить
                 {
                     auto visitor = std::make_shared<CollisionWithMapObjectVisitor>();
-                    gameState.playerTank->handleCollision(visitor.get());
+                    gameState.playerTank1->handleCollision(visitor.get());
                 }
             }
         }
 
-        if (gameState.allyTank.use_count() != 0) {
-            if (mapObj->getSprite().getGlobalBounds().intersects(gameState.allyTank->getSprite().getGlobalBounds())) {
+        if (gameState.playerTank2.use_count() != 0)
+            // if (gameState.playerTank2.use_count() != 0 && !gameState.playerTank2->getIsDestroyed())
+        {
+            if (mapObj->getSprite().getGlobalBounds().intersects(gameState.playerTank2->getSprite().getGlobalBounds())) {
                 if (dynamic_cast<Brick *>(mapObj.get()) ||
                     dynamic_cast<Metal *>(mapObj.get()) ||
                     dynamic_cast<Water *>(mapObj.get()) ||
                     dynamic_cast<Eagle *>(mapObj.get())) // через траву можно ездить
                 {
                     auto visitor = std::make_shared<CollisionWithMapObjectVisitor>();
-                    gameState.allyTank->handleCollision(visitor.get());
+                    gameState.playerTank2->handleCollision(visitor.get());
                 }
             }
         }
@@ -533,27 +615,30 @@ void GameEngine::handleCollisions() {
     if (gameState.bonus.use_count() != 0) {
         auto visitor = std::make_shared<CollisionWithTankVisitor>();
         if (gameState.bonus->getSprite().getGlobalBounds().intersects(
-                gameState.playerTank->getSprite().getGlobalBounds()))
+                gameState.playerTank1->getSprite().getGlobalBounds()))
             gameState.bonus->handleCollision(visitor.get());
 
-        if (gameState.allyTank.use_count() != 0) {
+        if (gameState.playerTank2.use_count() != 0 && !gameState.playerTank2->getIsDestroyed()) {
             if (gameState.bonus->getSprite().getGlobalBounds().intersects(
-                    gameState.allyTank->getSprite().getGlobalBounds()))
+                    gameState.playerTank2->getSprite().getGlobalBounds()))
                 gameState.bonus->handleCollision(visitor.get());
         }
     }
+    //pthread_mutex_unlock(&mutex);
 }
 
-void GameEngine::render() {
+void GameEngine::render()
+{
+    //pthread_mutex_lock(&mutex);
     for (auto &bullet: gameState.allBullets) {
         bullet->render(window);
     }
 
-    if (gameState.playerTank.use_count() != 0)
-        gameState.playerTank->render(window);
+    if (gameState.playerTank1.use_count() != 0)
+        gameState.playerTank1->render(window);
 
-    if (isTwoPlayers && gameState.allyTank.use_count() != 0)
-        gameState.allyTank->render(window);
+    if (isTwoPlayers && gameState.playerTank2.use_count() != 0)
+        gameState.playerTank2->render(window);
 
     for (auto &enemyTank: gameState.enemyTanks) {
         enemyTank->render(window);
@@ -578,6 +663,8 @@ void GameEngine::render() {
         window.draw(pauseSprite);
     }
 
+    //pthread_mutex_unlock(&mutex);
+
 }
 
 void GameEngine::renderHUD() {
@@ -601,8 +688,8 @@ void GameEngine::renderHUD() {
         window.draw(sprite);
     }
 
-    if (gameState.playerTank.use_count() != 0) {
-        int tmpHealths = dynamic_cast<PlayerTank *>(gameState.playerTank.get())->getHealths();
+    if (gameState.playerTank1.use_count() != 0) {
+        int tmpHealths = dynamic_cast<PlayerTank *>(gameState.playerTank1.get())->getHealths();
         sf::Sprite healthSprite(mainTexture);
         healthSprite.setTextureRect(sf::IntRect(288 + (8 * tmpHealths), 200, 8, 8));
         healthSprite.setPosition(224 * FACTOR, 136 * FACTOR);
@@ -616,11 +703,11 @@ void GameEngine::restart() {
     levelNum = 1;
     timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
 
-    gameState.playerTank = std::make_shared<PlayerTank>(PLAYER_SPAWN_X * FACTOR, PLAYER_SPAWN_Y * FACTOR,
-                                                        gameState.allBullets, false);
+    gameState.playerTank1 = std::make_shared<PlayerTank>(PLAYER_SPAWN_X * FACTOR, PLAYER_SPAWN_Y * FACTOR,
+                                                         gameState.allBullets, false);
     if (isTwoPlayers)
-        gameState.allyTank = std::make_shared<PlayerTank>(ALLY_SPAWN_X * FACTOR, ALLY_SPAWN_Y * FACTOR,
-                                                          gameState.allBullets, true);
+        gameState.playerTank2 = std::make_shared<PlayerTank>(ALLY_SPAWN_X * FACTOR, ALLY_SPAWN_Y * FACTOR,
+                                                             gameState.allBullets, true);
 
     gameState.bonus.reset();
     gameState.remainingEnemies = 18;
@@ -658,10 +745,10 @@ void GameEngine::bonusEffect() {
 
     if (handlingBonus->getBonusType() == HELMET) {
         if (gameState.bonus->getSprite().getGlobalBounds().intersects(
-                gameState.playerTank->getSprite().getGlobalBounds()))
-            dynamic_cast<PlayerTank *>(gameState.playerTank.get())->setIsInvulnerable();
+                gameState.playerTank1->getSprite().getGlobalBounds()))
+            dynamic_cast<PlayerTank *>(gameState.playerTank1.get())->setIsInvulnerable();
         else if (isTwoPlayers)
-            dynamic_cast<PlayerTank *>(gameState.allyTank.get())->setIsInvulnerable();
+            dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->setIsInvulnerable();
     } else if (handlingBonus->getBonusType() == CLOCK) {
         isClockBonusActive = true;
         clockBonusTimer.restart();
@@ -670,19 +757,19 @@ void GameEngine::bonusEffect() {
 
     } else if (handlingBonus->getBonusType() == STAR) {
         if (gameState.bonus->getSprite().getGlobalBounds().intersects(
-                gameState.playerTank->getSprite().getGlobalBounds()))
-            dynamic_cast<PlayerTank *>(gameState.playerTank.get())->addStar();
+                gameState.playerTank1->getSprite().getGlobalBounds()))
+            dynamic_cast<PlayerTank *>(gameState.playerTank1.get())->addStar();
         else if (isTwoPlayers)
-            dynamic_cast<PlayerTank *>(gameState.allyTank.get())->addStar();
+            dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->addStar();
     } else if (handlingBonus->getBonusType() == GRENADE) {
         enemiesOnScreen = 0;
         gameState.enemyTanks.clear();
     } else if (handlingBonus->getBonusType() == TANK) {
         if (gameState.bonus->getSprite().getGlobalBounds().intersects(
-                gameState.playerTank->getSprite().getGlobalBounds()))
-            dynamic_cast<PlayerTank *>(gameState.playerTank.get())->addHealth();
+                gameState.playerTank1->getSprite().getGlobalBounds()))
+            dynamic_cast<PlayerTank *>(gameState.playerTank1.get())->addHealth();
         else if (isTwoPlayers)
-            dynamic_cast<PlayerTank *>(gameState.allyTank.get())->addHealth();
+            dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->addHealth();
     }
     gameState.bonus.reset();
 }
@@ -719,6 +806,34 @@ void GameEngine::dropEnemies() {
     }
 }
 
+void * GameEngine::serverAction()
+{
+    while (1) {
+        //pthread_mutex_lock(&mutex);
+        std::cerr << "server action" << std::endl;
+        //pthread_mutex_unlock(&mutex);
+
+        //usleep(1/45);
+        //sleep(1/45);
+        //sleep(5);
+    }
+}
+
+void * GameEngine::clientAction()
+{
+    while (1) {
+        //pthread_mutex_lock(&mutex);
+        std::cerr << "client action" << std::endl;
+        //pthread_mutex_unlock(&mutex);
+        //sleep();
+        //usleep(1/45);
+        //sleep(5);
+    }
+}
+
 void GameEngine::end() {
+
+    pthread_cancel(thread);
+    pthread_join(thread, nullptr);
     // заставка мб
 }

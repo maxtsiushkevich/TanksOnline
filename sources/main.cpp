@@ -5,6 +5,7 @@
 
 float FACTOR = 5.f;
 
+pthread_mutex_t mutex;
 
 int firstMenu(sf::RenderWindow &window)
 {
@@ -27,7 +28,7 @@ int firstMenu(sf::RenderWindow &window)
         menuItem.setPosition(centerX, centerY + i * 10 *FACTOR);
         menuTexts.push_back(menuItem);
     }
-    menuTexts[selectedItemIndex].setColor(sf::Color::Red);
+    menuTexts[selectedItemIndex].setFillColor(sf::Color::Red);
 
     while(window.isOpen())
     {
@@ -42,17 +43,17 @@ int firstMenu(sf::RenderWindow &window)
                 {
                     if (selectedItemIndex > 0)
                     {
-                        menuTexts[selectedItemIndex].setColor(sf::Color::White);
+                        menuTexts[selectedItemIndex].setFillColor(sf::Color::White);
                         selectedItemIndex--;
-                        menuTexts[selectedItemIndex].setColor(sf::Color::Red);
+                        menuTexts[selectedItemIndex].setFillColor(sf::Color::Red);
                     }
                 }
                 else if (event.key.code == sf::Keyboard::Down)
                 {
                     if (selectedItemIndex < menuItems.size() - 1) {
-                        menuTexts[selectedItemIndex].setColor(sf::Color::White);
+                        menuTexts[selectedItemIndex].setFillColor(sf::Color::White);
                         selectedItemIndex++;
-                        menuTexts[selectedItemIndex].setColor(sf::Color::Red);
+                        menuTexts[selectedItemIndex].setFillColor(sf::Color::Red);
                     }
                 }
                 else if (event.key.code == sf::Keyboard::Return)
@@ -82,6 +83,7 @@ int firstMenu(sf::RenderWindow &window)
 
         window.display();
     }
+    exit(0);
 }
 
 int main()
@@ -115,19 +117,25 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed) {
                 window.close();
+                exit(0);
+            }
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
                 engine.togglePause();
         }
 
 
         window.clear();
-        //window.clear(sf::Color::White);
+
+        //pthread_mutex_lock(&mutex);
+        //std::cout << "upd" << std::endl;
 
         engine.update();
         engine.handleCollisions();
         engine.render();
+
+        //pthread_mutex_unlock(&mutex);
 
         window.display();
     }

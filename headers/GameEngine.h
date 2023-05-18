@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include "../headers/IGameObject.h"
 #include <memory>
-
 #include "../headers/Tank.h"
 #include "../headers/Bullet.h"
 #include "../headers/Map.h"
@@ -16,12 +15,13 @@
 #define SPRITE_LIST_NAME "SpriteList.png"
 
 extern float FACTOR;
+extern pthread_mutex_t mutex;
 
 class GameState
 {
 public:
-    std::shared_ptr<IGameObject> playerTank;
-    std::shared_ptr<IGameObject> allyTank;
+    std::shared_ptr<IGameObject> playerTank1;
+    std::shared_ptr<IGameObject> playerTank2;
     std::shared_ptr<IGameObject> bonus;
     std::vector<std::shared_ptr<IGameObject>> allBullets; // all bullets are stored here
     std::vector<std::shared_ptr<IGameObject>> enemyTanks; // all enemies are stored here
@@ -30,12 +30,14 @@ public:
     bool isPaused; // flag is game on pause
     int remainingEnemies; // remaining enemies on level
 
-//    friend class boost::serialization::access;
+    bool isAllyTankDestroyed; // что бы не посылать пустой объект танка союзника, если он уничтожен, а на его стороне не пытаться десериализовать его
+
+/*    friend class boost::serialization::access;
 //    template<class Archive>
 //    void serialize(Archive & ar, const unsigned int version)
 //    {
-//        ar & *playerTank;
-//        ar & *allyTank;
+//        ar & *playerTank1;
+//        ar & *playerTank2;
 //        if (bonus != nullptr) {
 //            ar & *bonus;
 //        }
@@ -52,10 +54,10 @@ public:
 
 //    GameState()
 //    {
-//        playerTank = std::make_shared<PlayerTank>(-100,-100, allBullets, false);
-//        allyTank = std::make_shared<PlayerTank>(-100, -100, allBullets, false);
+//        playerTank1 = std::make_shared<PlayerTank>(-100,-100, allBullets, false);
+//        playerTank2 = std::make_shared<PlayerTank>(-100, -100, allBullets, false);
 //        bonus = std::make_shared<Bonus>(-100, -100, -1);
-//    };
+//    }; */
 
     ~GameState() { std::cout <<"destructor" << std::endl;}
 };
@@ -76,6 +78,9 @@ private:
 
     Multiplayer multiplayer;
 
+    bool isServer;
+    bool isClient;
+
     bool isFlagFallen; // flag is base destroyed
 
     bool isTwoPlayers; // is 2 players on one computer
@@ -87,6 +92,9 @@ private:
     bool isClockBonusActive; // flag is clock bonus active, because this bonus stopped all enemies
     int enemyWithBonusCounter; // every 4th enemy drops bonus
     int levelNum;
+
+    pthread_t thread;
+
 
 public:
     GameEngine(sf::RenderWindow &window) : window(window) {}
@@ -105,6 +113,9 @@ public:
     void renderHUD();
     void end();
     void restart();
+
+    static void * serverAction();
+    static void * clientAction();
 
     void connect();
 };

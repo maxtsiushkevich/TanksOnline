@@ -20,12 +20,12 @@ public:
     for (const auto &obj: allObjects) // идем по объединенному вектору танков врагов и всех пуль
     {
         if (obj->getSprite().getGlobalBounds().intersects(
-                playerTank->getSprite().getGlobalBounds())) // если что-то пересекается с танком игрока
+                playerTank1->getSprite().getGlobalBounds())) // если что-то пересекается с танком игрока
         {
             if (dynamic_cast<Tank *>(obj.get())) // если это танк врага
             {
                 auto visitor = std::make_shared<CollisionWithTankVisitor>();
-                playerTank->handleCollision(visitor.get()); // обработка столкновения для игрока
+                playerTank1->handleCollision(visitor.get()); // обработка столкновения для игрока
                 obj->handleCollision(visitor.get()); // для вражеского танка
                 continue;
             }
@@ -40,7 +40,7 @@ public:
                 auto visitor1 = std::make_shared<CollisionWithTankVisitor>();
                 auto visitor2 = std::make_shared<CollisionWithBulletVisitor>();
                 obj->handleCollision(visitor1.get());
-                playerTank->handleCollision(visitor2.get());
+                playerTank1->handleCollision(visitor2.get());
                 continue;
             }
         }

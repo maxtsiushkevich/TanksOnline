@@ -2,9 +2,9 @@ APP_NAME := Tanks
 
 CXX := g++
 
-CXXFLAGS := -Wall -Wextra -pedantic -std=c++17
+CXXFLAGS := -std=c++17
 
-SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
+SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system -pthread
 
 SRC_DIR := sources
 OBJ_DIR := objects
