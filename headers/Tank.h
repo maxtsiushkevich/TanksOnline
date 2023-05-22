@@ -4,11 +4,11 @@
 #include "../headers/IGameObject.h"
 #include <iostream>
 
-#define TANK_SPEED 45.f
-#define ENEMY_TANK_SPEED 45.f
-#define CARRIER_SPEED 300.f
-#define INVULNERABLE_TIME 5.f
-#define DELAY_BEFORE_SHOOT 1.f
+#define TANK_SPEED 45
+#define ENEMY_TANK_SPEED 45
+#define CARRIER_SPEED 90
+#define INVULNERABLE_TIME 5
+#define DELAY_BEFORE_SHOOT 1
 
 extern float FACTOR;
 
@@ -35,33 +35,26 @@ protected:
 
 public:
     Tank(float x, float y, float speed, int health, std::vector<std::shared_ptr<IGameObject>> &allBullets);
-    ~Tank() override = default;
+    ~Tank() = default;
     void render(sf::RenderWindow &window) override;
     virtual void move(float distance) = 0;
     virtual void shoot() = 0;
     virtual void enableShooting();
     float getTime() const;
+    void setTime(float newTime) { time = newTime; }
     float getSpeed() const;
-    int getHealths() const;
+    int getHealth() const;
+    void setHealth(int newHealth) { health = newHealth; }
     void decrementAnimation();
 
-//    friend class boost::serialization::access;
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        IGameObject::serialize(ar, version);
-//        ar & tankDestination;
-//        ar & health;
-//        ar & animation;
-//        ar & canShoot;
-//        ar & speed;
-//        ar & time;
-//    }
+    int getDestination() { return tankDestination; }
+    int setDestination(int newDest) { tankDestination = static_cast<Destination>(newDest); }
 };
 
 class PlayerTank : public Tank
         {
     friend class GameState;
+    friend class CollisionWithMapObjectVisitor;
 protected:
     bool isInvulnerable;
     Destination previousButton;
@@ -71,7 +64,7 @@ protected:
     bool isAllyTank;
 public:
     PlayerTank(float x, float y, std::vector<std::shared_ptr<IGameObject>> &allBullets, bool isAllyTank);
-    ~PlayerTank() override = default;
+    ~PlayerTank() = default;
     void update(float time) override;
     void move(float distance) override;
     void shoot() override;
@@ -79,30 +72,34 @@ public:
     void reset();
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
-    bool getIsInvulnerable() const;
     void addHealth();
+
+    bool getIsInvulnerable() const;
     void setIsInvulnerable();
+    void setIsInvulnerable(bool newState) { isInvulnerable = newState; };
 
-    void setX(float x);
-    void setY(float y);
+    void setStars(int newStars) { stars = newStars; }
+    int getStars() { return stars; }
 
-//    friend class boost::serialization::access;
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        Tank::serialize(ar, version);
-//        ar & isInvulnerable;
-//        ar & previousButton;
-//        ar & isShootButtonPressed;
-//        ar & stars;
-//        ar & speed;
-//        ar & isAllyTank;
-//    }
+    void setAnimation(int animation) { this->animation = animation; }
+    int getAnimation() { return stars; }
+
+    void setSprite() {
+        if (tankDestination == LEFT)
+            sprite.setTextureRect(sf::IntRect(32 + (16 * animation), stars * 16, 16, 16));
+        else if (tankDestination == RIGHT)
+            sprite.setTextureRect(sf::IntRect(96 + (16 * animation), stars * 16, 16, 16));
+        else if (tankDestination == DOWN)
+            sprite.setTextureRect(sf::IntRect(64 + (16 * animation), stars * 16, 16, 16));
+        else if (tankDestination == UP)
+            sprite.setTextureRect(sf::IntRect(0 + (16 * animation), stars * 16, 16, 16));
+    }
 };
 
 class EnemyTank : public Tank
 {
     friend class GameState;
+    friend class CollisionWithMapObjectVisitor;
 protected:
     bool isColliding;
     EnemyType type;
@@ -111,7 +108,7 @@ protected:
     sf::Clock delayBeforeShoot;
 public:
     EnemyTank(float x, float y, std::vector<std::shared_ptr<IGameObject>> &allBullets, int type, bool isBonusTank);
-    ~EnemyTank() override = default;
+    ~EnemyTank() = default;
     void update(float time) override;
     void move(float distance) override;
     void shoot() override;
@@ -120,18 +117,11 @@ public:
     void handleCollision(IVisitor *visitor) override;
     void enableShooting() override;
     bool getIsBonusTank() const;
+
+    void setType(int newType) { type = static_cast<EnemyType>(newType); }
     int getType() const;
 
-//    friend class boost::serialization::access;
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        Tank::serialize(ar, version);
-//        ar & isColliding;
-//        ar & type;
-//        ar & randDest;
-//        ar & isBonusTank;
-//    }
+    void setIsBonusTank(bool newState) { isBonusTank = newState; }
 };
 
 #endif

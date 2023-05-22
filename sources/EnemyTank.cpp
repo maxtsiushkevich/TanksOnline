@@ -15,7 +15,7 @@ EnemyTank::EnemyTank(float x, float y, std::vector<std::shared_ptr<IGameObject>>
 
     this->type = static_cast<EnemyType>(type);
 
-    if (this->type == EnemyCarrier)
+    if (this->type != EnemyCarrier)
         this->speed = CARRIER_SPEED;
 
     if (this->type == EnemyHeavyTank)
@@ -32,8 +32,10 @@ EnemyTank::EnemyTank(float x, float y, std::vector<std::shared_ptr<IGameObject>>
 }
 
 void EnemyTank::update(float time) {
+
     this->time = time;
-    float distance = this->speed * time;
+
+    float distance = speed * this->time;
     if (canShoot && (delayBeforeShoot.getElapsedTime().asSeconds() > DELAY_BEFORE_SHOOT)) {
        this->shoot();
     }

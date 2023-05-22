@@ -3,17 +3,14 @@
 
 #include <SFML/Graphics.hpp>
 #include "IVisitor.h"
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/shared_ptr.hpp>
-#include <boost/serialization/base_object.hpp>
-#include <boost/serialization/export.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-
-
+#include <sstream>
 #include <memory>
+
+
+#define PLAYER_SPAWN_X 64
+#define PLAYER_SPAWN_Y 192
+#define ALLY_SPAWN_X 128
+#define ALLY_SPAWN_Y 192
 
 enum Destination {
     UP,
@@ -21,6 +18,8 @@ enum Destination {
     DOWN,
     RIGHT
 };
+
+
 
 class IGameObject : public std::enable_shared_from_this<IGameObject>
 {
@@ -37,19 +36,24 @@ public:
     virtual void update(float time) = 0;
     virtual void render(sf::RenderWindow &window) = 0;
     virtual void handleCollision(IVisitor *visitor) = 0;
-    virtual void setIsDestroyed();
-    bool getIsDestroyed();
+
     sf::Sprite &getSprite();
 
-//    friend class boost::serialization::access;
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        ar & isDestroyed;
-//        ar & dx;
-//        ar & dy;
-//    }
+    void setIsDestroyed();
+    void setIsDestroyed(bool newState) { isDestroyed = newState; }
+    bool getIsDestroyed();
 
+    float getX() { return dx; };
+    float getY() { return dy; };
+
+    void setX(float x) {
+        dx = x;
+        sprite.setPosition(dx, dy);
+    };
+    void setY(float y) {
+        dy = y;
+        sprite.setPosition(dx, dy);
+    };
 };
 
 

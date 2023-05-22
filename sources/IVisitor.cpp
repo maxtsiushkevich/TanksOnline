@@ -110,6 +110,16 @@ void CollisionWithBulletVisitor::visit(Eagle &object)
 void CollisionWithMapObjectVisitor::visit(PlayerTank &tank)
 {
     float distance = tank.getTime() * tank.getSpeed();
+
+//    if (tank.tankDestination == LEFT)
+//        tank.dx = distance;
+//    else if (tank.tankDestination == RIGHT)
+//        tank.dx += distance;
+//    else if (tank.tankDestination == DOWN)
+//        tank.dy += distance;
+//    else if (tank.tankDestination == UP)
+//        tank.dy -= distance;
+
     tank.decrementAnimation();
     tank.move(-distance);
 }

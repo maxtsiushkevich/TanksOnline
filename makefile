@@ -2,9 +2,9 @@ APP_NAME := Tanks
 
 CXX := g++
 
-CXXFLAGS := -std=c++17
+CXXFLAGS := -std=c++17 -lboost_serialization
 
-SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system -pthread
+SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system -pthread -lboost_serialization
 
 SRC_DIR := sources
 OBJ_DIR := objects

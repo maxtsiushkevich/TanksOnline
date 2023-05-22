@@ -14,57 +14,52 @@
 #define FONT_NAME "Font.ttf"
 #define SPRITE_LIST_NAME "SpriteList.png"
 
+
 extern float FACTOR;
 extern pthread_mutex_t mutex;
 
+void * serverAction(void *args);
+void * clientAction(void *args);
+
 class GameState
 {
-public:
+    friend class GameEngine;
+    friend class Multiplayer;
+    friend class SendReceiveMessage;
+private:
     std::shared_ptr<IGameObject> playerTank1;
     std::shared_ptr<IGameObject> playerTank2;
-    std::shared_ptr<IGameObject> bonus;
     std::vector<std::shared_ptr<IGameObject>> allBullets; // all bullets are stored here
+
+    std::shared_ptr<IGameObject> bonus;
     std::vector<std::shared_ptr<IGameObject>> enemyTanks; // all enemies are stored here
     std::vector<std::shared_ptr<IGameObject>> map;
     int points;
+    int levelNum;
     bool isPaused; // flag is game on pause
     int remainingEnemies; // remaining enemies on level
-
     bool isAllyTankDestroyed; // что бы не посылать пустой объект танка союзника, если он уничтожен, а на его стороне не пытаться десериализовать его
+};
 
-/*    friend class boost::serialization::access;
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        ar & *playerTank1;
-//        ar & *playerTank2;
-//        if (bonus != nullptr) {
-//            ar & *bonus;
-//        }
-//        ar & points;
-//        ar & isPaused;
-//        ar & remainingEnemies;
-//
-//        for (auto bullet : allBullets)
-//            ar & *bullet;
-//
-//        //ar & enemyTanks;
-//        //ar & map;
-//    }
-
-//    GameState()
-//    {
-//        playerTank1 = std::make_shared<PlayerTank>(-100,-100, allBullets, false);
-//        playerTank2 = std::make_shared<PlayerTank>(-100, -100, allBullets, false);
-//        bonus = std::make_shared<Bonus>(-100, -100, -1);
-//    }; */
-
-    ~GameState() { std::cout <<"destructor" << std::endl;}
+struct ClientServerArgs
+{
+    Multiplayer& multiplayer;
+    GameState& gameState;
 };
 
 class GameEngine
 {
 private:
+
+    /*
+    //std::shared_ptr<IGameObject> bonus;
+    //std::vector<std::shared_ptr<IGameObject>> allBullets; // all bullets are stored here
+    //std::vector<std::shared_ptr<IGameObject>> enemyTanks; // all enemies are stored here
+    //std::vector<std::shared_ptr<IGameObject>> map;
+    //int points;
+    //bool isPaused; // flag is game on pause
+    //int remainingEnemies; // remaining enemies on level
+    //int levelNum; */
 
     sf::Font font; // main font in game
 
@@ -80,18 +75,17 @@ private:
 
     bool isServer;
     bool isClient;
+    bool isTwoPlayers; // is 2 players on one computer
+    bool isOnline; // is online game
 
     bool isFlagFallen; // flag is base destroyed
 
-    bool isTwoPlayers; // is 2 players on one computer
-    bool isOnline; // is online game
 
     int enemiesOnScreen;
     int timeBetweenRenderEnemyTank;
 
     bool isClockBonusActive; // flag is clock bonus active, because this bonus stopped all enemies
     int enemyWithBonusCounter; // every 4th enemy drops bonus
-    int levelNum;
 
     pthread_t thread;
 
@@ -113,10 +107,7 @@ public:
     void renderHUD();
     void end();
     void restart();
-
-    static void * serverAction();
-    static void * clientAction();
-
+    bool getIsServer();
     void connect();
 };
 

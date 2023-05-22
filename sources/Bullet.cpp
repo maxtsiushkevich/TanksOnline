@@ -81,10 +81,6 @@ std::shared_ptr<IGameObject> Bullet::getOwner() const {
     return owner;
 }
 
-void Bullet::setIsDestroyed() {
-    isDestroyed = true;
-}
-
 PlayerBullet::PlayerBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner) : Bullet(x, y,
                                                                                                             PLAYER_BULLET_SPEED,
                                                                                                             dest,

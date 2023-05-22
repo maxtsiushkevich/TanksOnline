@@ -54,9 +54,10 @@ void PlayerTank::reset() {
 
 void PlayerTank::render(sf::RenderWindow &window) {
     window.draw(sprite);
+
     if (isInvulnerable)
     {
-        if (animation == 2) // обработка движения
+        if (animation == 2)
             animation = 0;
         sf::Sprite effect;
         effect.setTexture(texture);
@@ -100,7 +101,8 @@ void PlayerTank::shoot()
             canShoot = false;
             break;
         case 2:
-            bullet = std::make_shared<PlayerBullet>(dx, dy, tankDestination, shared_from_this());
+            //bullet = std::make_shared<PlayerBullet>(dx, dy, tankDestination, shared_from_this()); сделать максимум 2 пули одновременно
+
             break;
             // очередь
         case 3:
@@ -184,8 +186,17 @@ void PlayerTank::move(float distance) {
         previousButton = UP;
         tankDestination = UP;
     }
+
+    //if (tankDestination == LEFT)
+    //    dx -= distance;
+    //else if (tankDestination == RIGHT)
+    //    dx += distance;
+    //else if (tankDestination == DOWN)
+    //    dy += distance;
+    //else if (tankDestination == UP)
+    //    dy -= distance;
+
     sprite.setPosition(dx, dy);
-    previousButton = tankDestination;
     animation++;
 }
 
@@ -202,6 +213,3 @@ void PlayerTank::setIsInvulnerable() {
 bool PlayerTank::getIsInvulnerable() const { return isInvulnerable; }
 
 void PlayerTank::addHealth() { health++; }
-
-void PlayerTank::setX(float x) { dx = x; }
-void PlayerTank::setY(float y) { dy = y; }

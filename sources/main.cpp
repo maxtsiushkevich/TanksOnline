@@ -3,7 +3,7 @@
 #include "../headers/GameEngine.h"
 
 
-float FACTOR = 5.f;
+float FACTOR = 4.f;
 
 pthread_mutex_t mutex;
 
@@ -119,6 +119,7 @@ int main()
         {
             if (event.type == sf::Event::Closed) {
                 window.close();
+                engine.end();
                 exit(0);
             }
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
@@ -127,15 +128,19 @@ int main()
 
 
         window.clear();
+        //window.clear(sf::Color::White);
 
-        //pthread_mutex_lock(&mutex);
-        //std::cout << "upd" << std::endl;
+        pthread_mutex_lock(&mutex);
 
         engine.update();
-        engine.handleCollisions();
+
+        if (engine.getIsServer())
+            engine.handleCollisions();
+
         engine.render();
 
-        //pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&mutex);
+        usleep(1);
 
         window.display();
     }

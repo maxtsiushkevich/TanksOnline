@@ -30,7 +30,7 @@ float Tank::getSpeed() const {
     return speed;
 }
 
-int Tank::getHealths() const {
+int Tank::getHealth() const {
     return health;
 }
 

@@ -1,10 +1,10 @@
 #ifndef GAME_BULLET_H
 #define GAME_BULLET_H
 
-#define PLAYER_BULLET_SPEED 110.f
-#define PLAYER_FAST_BULLET_SPEED 220.f
-#define ENEMY_BULLET_SPEED 90.f
-#define ENEMY_FAST_BULLET_SPEED 180.f
+#define PLAYER_BULLET_SPEED 110
+#define PLAYER_FAST_BULLET_SPEED 220
+#define ENEMY_BULLET_SPEED 90
+#define ENEMY_FAST_BULLET_SPEED 180
 
 #include "../headers/IGameObject.h"
 #include "../headers/Tank.h"
@@ -21,17 +21,10 @@ public:
     void update(float time) override;
     void render(sf::RenderWindow &window) override;
     bool checkBounds();
-    void setIsDestroyed() override;
     std::shared_ptr<IGameObject> getOwner() const;
 
-//    friend class boost::serialization::access;
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        IGameObject::serialize(ar, version);
-//        ar & *owner;
-//        ar & bulletDestination;
-//    }
+    int getDestination() { return bulletDestination; }
+    void setDestination(int newDestination) { bulletDestination = static_cast<Destination>(newDestination); }
 };
 
 class PlayerBullet : public Bullet // пуля игрока
@@ -40,13 +33,6 @@ class PlayerBullet : public Bullet // пуля игрока
 public:
     PlayerBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner);
     void handleCollision(IVisitor *visitor) override;
-
-//    friend class boost::serialization::access;
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        Bullet::serialize(ar, version);
-//    }
 };
 
 class PlayerFastBullet : public Bullet {
@@ -54,25 +40,12 @@ class PlayerFastBullet : public Bullet {
 public:
     PlayerFastBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner);
     void handleCollision(IVisitor *visitor) override;
-//    friend class boost::serialization::access;
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        Bullet::serialize(ar, version);
-//    }
 };
 
 class PlayerPowerfulBullet : public Bullet {
 public:
     PlayerPowerfulBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner);
     void handleCollision(IVisitor *visitor) override;
-    friend class boost::serialization::access;
-
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        Bullet::serialize(ar, version);
-//    }
 };
 
 class EnemyBullet : public Bullet // пуля врага
@@ -81,12 +54,6 @@ class EnemyBullet : public Bullet // пуля врага
 public:
     EnemyBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner);
     void handleCollision(IVisitor *visitor) override;
-//    friend class boost::serialization::access;
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        Bullet::serialize(ar, version);
-//    }
 };
 
 class EnemyFastBullet : public Bullet // пуля врага
@@ -95,12 +62,6 @@ class EnemyFastBullet : public Bullet // пуля врага
 public:
     EnemyFastBullet(float x, float y, Destination dest, std::shared_ptr<IGameObject> owner);
     void handleCollision(IVisitor *visitor) override;
-//    friend class boost::serialization::access;
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        Bullet::serialize(ar, version);
-//    }
 };
 
 #endif

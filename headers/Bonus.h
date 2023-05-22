@@ -30,15 +30,6 @@ public:
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
     BonusType getBonusType();
-
-//    friend class boost::serialization::access;
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        IGameObject::serialize(ar, version);
-//        ar & type;
-//        ar & isPicked;
-//    }
 };
 
 

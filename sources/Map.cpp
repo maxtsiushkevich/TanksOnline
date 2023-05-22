@@ -58,17 +58,20 @@ void Map::loadMap(std::vector<std::shared_ptr<IGameObject>> &map, int levelNum)
 
 void Map::update(std::vector<std::shared_ptr<IGameObject>> &map)
 {
-    for (auto it = map.begin(); it != map.end(); )
-    {
-        auto* mapObj = dynamic_cast<MapObject*>(it->get());
-        if (mapObj && mapObj->getIsDestroyed())
-            it = map.erase(it);
-        else
-            ++it;
-    }
+//    for (auto it = map.begin(); it != map.end(); )
+//    {
+//        auto* mapObj = dynamic_cast<MapObject*>(it->get());
+//        if (mapObj && mapObj->getIsDestroyed())
+//            it = map.erase(it);
+//        else
+//            ++it;
+//    }
 }
 
 void Map::render(std::vector<std::shared_ptr<IGameObject>> &map, sf::RenderWindow &window) {
     for (const auto &gameObject : map)
+    {
+        if (!gameObject->getIsDestroyed())
             gameObject->render(window);
+    }
 }
