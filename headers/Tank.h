@@ -48,7 +48,7 @@ public:
     void decrementAnimation();
 
     int getDestination() { return tankDestination; }
-    int setDestination(int newDest) { tankDestination = static_cast<Destination>(newDest); }
+    void setDestination(int newDest) { tankDestination = static_cast<Destination>(newDest); }
 };
 
 class PlayerTank : public Tank

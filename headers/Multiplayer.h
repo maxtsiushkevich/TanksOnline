@@ -151,11 +151,13 @@ public:
 class Multiplayer
 {
 public:
-    int server, client;
-    std::string ip;
+    int server;
+    int client;
     int port;
-    struct sockaddr_in servaddr;
+    std::string ip;
+    struct sockaddr_in settings;
 
+    Multiplayer() = default;
     ~Multiplayer()
     {
         close(server);
@@ -163,18 +165,10 @@ public:
     }
 
     bool serverInit(int port);
-
     bool clientInit(std::string ip, int port);
-
     std::string serializeGameState(const GameState &gameState); // сериализует все состояние
     void deserializeGameState(GameState &gameState, std::string data, bool isServer);
-
-    //GameState deserializeObject(const std::string& data);
-    //std::string serializeData(const PlayerTank &object);
-    //PlayerTank deserializeTank(const std::string& data);
-
     std::string getIpFromStruct();
-
     int getClientSocket() { return client; }
     int getServerSocket() { return server; }
 };

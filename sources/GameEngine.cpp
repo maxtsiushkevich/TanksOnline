@@ -675,14 +675,16 @@ void GameEngine::renderHUD() {
         window.draw(sprite);
     }
 
-    if (gameState.playerTank1.use_count() != 0) {
-        int tmpHealths = dynamic_cast<PlayerTank *>(gameState.playerTank1.get())->getHealth();
-        sf::Sprite healthSprite(mainTexture);
-        healthSprite.setTextureRect(sf::IntRect(288 + (8 * tmpHealths), 200, 8, 8));
-        healthSprite.setPosition(224 * FACTOR, 136 * FACTOR);
-        healthSprite.setScale(FACTOR, FACTOR);
-        window.draw(healthSprite);
-    }
+    int tmpHealths = 0;
+    if (gameState.playerTank1.use_count() != 0 && isServer)
+        tmpHealths = dynamic_cast<PlayerTank *>(gameState.playerTank1.get())->getHealth();
+    else if (gameState.playerTank2.use_count() != 0 && isClient)
+        tmpHealths = dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->getHealth();
+    sf::Sprite healthSprite(mainTexture);
+    healthSprite.setTextureRect(sf::IntRect(288 + (8 * tmpHealths), 200, 8, 8));
+    healthSprite.setPosition(224 * FACTOR, 136 * FACTOR);
+    healthSprite.setScale(FACTOR, FACTOR);
+    window.draw(healthSprite);
 }
 
 void GameEngine::restart() {

@@ -57,8 +57,9 @@ void PlayerTank::render(sf::RenderWindow &window) {
 
     if (isInvulnerable)
     {
-        if (animation == 2)
+        if (animation == 2 )
             animation = 0;
+
         sf::Sprite effect;
         effect.setTexture(texture);
         effect.setTextureRect(sf::IntRect(256 + (16 * animation), 144, 16, 16));
@@ -186,17 +187,8 @@ void PlayerTank::move(float distance) {
         previousButton = UP;
         tankDestination = UP;
     }
-
-    //if (tankDestination == LEFT)
-    //    dx -= distance;
-    //else if (tankDestination == RIGHT)
-    //    dx += distance;
-    //else if (tankDestination == DOWN)
-    //    dy += distance;
-    //else if (tankDestination == UP)
-    //    dy -= distance;
-
     sprite.setPosition(dx, dy);
+    previousButton = tankDestination;
     animation++;
 }
 

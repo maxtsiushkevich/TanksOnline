@@ -14,11 +14,11 @@ bool Multiplayer :: serverInit(int port)
     else
         std::cout << "socket created" << std::endl;
 
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = htons(port);
+    settings.sin_family = AF_INET;
+    settings.sin_addr.s_addr = htonl(INADDR_ANY);
+    settings.sin_port = htons(port);
 
-    if (bind(server, (struct sockaddr*)&servaddr, sizeof(servaddr)))
+    if (bind(server, (struct sockaddr*)&settings, sizeof(settings)))
     {
         std::cout << "socket bind failed";
         close(server);
@@ -67,12 +67,12 @@ bool Multiplayer :: clientInit(std::string ip, int port)
     else
         std::cout << "socket created" << std::endl;
 
-    bzero(&servaddr, sizeof(servaddr));
+    bzero(&settings, sizeof(settings));
 
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = inet_addr(ip.c_str());
-    servaddr.sin_port = htons(port);
-    if (connect(client, (struct sockaddr*)&servaddr, sizeof(servaddr)) != 0)
+    settings.sin_family = AF_INET;
+    settings.sin_addr.s_addr = inet_addr(ip.c_str());
+    settings.sin_port = htons(this->port);
+    if (connect(client, (struct sockaddr*)&settings, sizeof(settings)) != 0)
     {
         std::cout << "connection with server failed";
         close(client);
@@ -183,13 +183,14 @@ void SendReceiveMessage :: generateMessage(const GameState &gameState)
         this->map[i].isDestroyed = gameState.map[i]->getIsDestroyed();
     }
 
-    //if (gameState.bonus.use_count() != 0) // добавить тип бонуса
-    //{
-    //    this->bonus.dx = gameState.bonus->getX();
-    //    this->bonus.dy = gameState.bonus->getY();
-    //    this->bonus.isDestroyed = gameState.bonus->getIsDestroyed();
-    //    this->bonus.isPicked = dynamic_cast<Bonus*>(gameState.bonus.get())->getIsPicked();
-    //}
+    if (gameState.bonus.use_count() != 0) // добавить тип бонуса
+    {
+        this->bonus.dx = gameState.bonus->getX();
+        this->bonus.dy = gameState.bonus->getY();
+        this->bonus.isDestroyed = gameState.bonus->getIsDestroyed();
+        this->bonus.isPicked = dynamic_cast<Bonus*>(gameState.bonus.get())->getIsPicked();
+        this->bonus.type = dynamic_cast<Bonus*>(gameState.bonus.get())->getBonusType();
+    }
 
     this->levelNum = gameState.levelNum;
     this->remainingEnemies = gameState.remainingEnemies;
@@ -248,13 +249,10 @@ void SendReceiveMessage :: parsingMessageForClient(GameState &gameState)
         gameState.map[i]->setIsDestroyed(this->map[i].isDestroyed);
     }
 
-    //if (!this->bonus.isDestroyed) // переделать
-    //{
-    //    this->bonus.dx = gameState.bonus->getX();
-    //    this->bonus.dy = gameState.bonus->getY();
-    //    this->bonus.isDestroyed = gameState.bonus->getIsDestroyed();
-    //    this->bonus.isPicked = dynamic_cast<Bonus*>(gameState.bonus.get())->getIsPicked();
-    //}
+    if (!this->bonus.isDestroyed && gameState.bonus.use_count() == 0)
+        gameState.bonus = std::make_shared<Bonus>(this->bonus.dx, this->bonus.dy, this->bonus.type);
+    else if (this->bonus.isDestroyed)
+        gameState.bonus.reset();
 
 
     if (gameState.levelNum != this->levelNum)

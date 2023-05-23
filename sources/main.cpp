@@ -3,7 +3,7 @@
 #include "../headers/GameEngine.h"
 
 
-float FACTOR = 4.f;
+float FACTOR = 5.f;
 
 pthread_mutex_t mutex;
 
@@ -108,9 +108,6 @@ int main()
         case 2:
             engine.init(true, true);
             break;
-        default:
-            exit(0);
-
     }
     while (window.isOpen())
     {
@@ -125,10 +122,7 @@ int main()
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
                 engine.togglePause();
         }
-
-
         window.clear();
-        //window.clear(sf::Color::White);
 
         pthread_mutex_lock(&mutex);
 
@@ -138,10 +132,8 @@ int main()
             engine.handleCollisions();
 
         engine.render();
-
         pthread_mutex_unlock(&mutex);
         usleep(1);
-
         window.display();
     }
     engine.end();

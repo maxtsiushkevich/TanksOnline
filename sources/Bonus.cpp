@@ -13,7 +13,10 @@ bool Bonus :: getIsPicked() const
     return isPicked;
 }
 
-void Bonus::setIsPicked() { isPicked = true; }
+void Bonus::setIsPicked()
+{
+    isPicked = true;
+}
 
 void update(float time) {
 }
