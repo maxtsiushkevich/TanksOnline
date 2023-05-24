@@ -3,7 +3,7 @@
 #include "../headers/GameEngine.h"
 
 
-float FACTOR = 5.f;
+float FACTOR = 3.f;
 
 pthread_mutex_t mutex;
 

@@ -102,12 +102,13 @@ void GameEngine::connect() {
                 window.display();
 
                 sf::Event event;
-                while (window.pollEvent(event)) {
+                while (window.pollEvent(event))
+                {
                     if (event.type == sf::Event::Closed) {
                         window.close();
                         exit(0);
                     }
-                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                    if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
                         window.close();
                         exit(0);
                     }
@@ -799,10 +800,13 @@ bool GameEngine::getIsServer() {
     return isServer;
 }
 
-void GameEngine::end() {
-
-    pthread_cancel(thread);
-    pthread_join(thread, nullptr);
+void GameEngine::end()
+{
+    if (thread != pthread_t()) {
+        pthread_cancel(thread);
+        pthread_join(thread, nullptr);
+    }
+    pthread_mutex_destroy(&mutex);
     // заставка мб
 }
 
