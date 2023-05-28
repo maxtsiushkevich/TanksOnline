@@ -33,6 +33,7 @@ private:
         int health;
         int destination;
         bool isInvulnerable, isDestroyed = true;
+        bool canShoot;
 
         friend class boost::serialization::access;
         template<class Archive>
@@ -47,6 +48,7 @@ private:
             ar & destination;
             ar & isInvulnerable;
             ar & isDestroyed;
+            ar & canShoot;
         }
     } pt[2];
 
@@ -61,7 +63,7 @@ private:
         void serialize(Archive& ar, const unsigned int version)
         {
             ar & dx;
-            ar &dy;
+            ar & dy;
             ar & type;
             ar & destination;
             ar & isBonus;
@@ -69,23 +71,21 @@ private:
         }
     } et[4];
 
-//    struct bullet
-//    {
-//        float dx, dy;
-//        int destination;
-//        bool isDestroyed = true, isPowerful = false, isFast = false;
-//        friend class boost::serialization::access;
-//        template<class Archive>
-//        void serialize(Archive& ar, const unsigned int version)
-//        {
-//            ar & dx;
-//            ar & dy;
-//            ar & destination;
-//            ar & isDestroyed;
-//            ar & isPowerful;
-//            ar & isFast;
-//        }
-//    } bul[7];
+    struct bullet
+    {
+        float dx, dy;
+        int destination;
+        bool isDestroyed = true;
+        friend class boost::serialization::access;
+        template<class Archive>
+        void serialize(Archive& ar, const unsigned int version)
+        {
+            ar & dx;
+            ar & dy;
+            ar & destination;
+            ar & isDestroyed;
+        }
+    } bul[7];
 
     struct map
     {
@@ -102,8 +102,7 @@ private:
         }
     } map[676];
 
-    struct bonus
-    {
+    struct bonus {
         int type;
         float dx, dy;
         bool isPicked, isDestroyed = true;
@@ -118,13 +117,12 @@ private:
             ar & isDestroyed;
         }
     } bonus;
-
     int levelNum, remainingEnemies;
+    int enemiesOnScreen, numOfBullets;
     bool isPaused;
 
 public:
     SendReceiveMessage() = default;
-
     void generateMessage(const GameState &object);
     void parsingMessageForClient(GameState &gameState);
     void parsingMessageForServer(GameState &gameState);
@@ -135,15 +133,15 @@ public:
     {
         ar & pt;
         ar & et;
-        //ar & bul;
+        ar & bul;
         ar & map;
         ar & bonus;
         ar & levelNum;
         ar & remainingEnemies;
         ar & isPaused;
+        ar & enemiesOnScreen;
+        ar & numOfBullets;
     }
-
-
 };
 
 class Multiplayer
@@ -156,12 +154,10 @@ public:
     struct sockaddr_in settings;
 
     Multiplayer() = default;
-    ~Multiplayer()
-    {
+    ~Multiplayer() {
         close(server);
         close(client);
     }
-
     bool serverInit(int port);
     bool clientInit(std::string ip, int port);
     std::string serializeGameState(const GameState &gameState); // сериализует все состояние
@@ -170,4 +166,5 @@ public:
     int getClientSocket() { return client; }
     int getServerSocket() { return server; }
 };
+
 #endif

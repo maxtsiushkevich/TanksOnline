@@ -6,8 +6,7 @@
 
 extern float FACTOR;
 
-enum BonusType
-{
+enum BonusType{
     HELMET,
     CLOCK,
     SHOVEL,

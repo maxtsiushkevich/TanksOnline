@@ -19,12 +19,9 @@ enum Destination {
     RIGHT
 };
 
-
-
 class IGameObject : public std::enable_shared_from_this<IGameObject>
 {
     friend class GameState;
-
 protected:
     bool isDestroyed;
     sf::Sprite sprite;
@@ -36,16 +33,12 @@ public:
     virtual void update(float time) = 0;
     virtual void render(sf::RenderWindow &window) = 0;
     virtual void handleCollision(IVisitor *visitor) = 0;
-
     sf::Sprite &getSprite();
-
     void setIsDestroyed();
     void setIsDestroyed(bool newState) { isDestroyed = newState; }
     bool getIsDestroyed();
-
     float getX() { return dx; };
     float getY() { return dy; };
-
     void setX(float x) {
         dx = x;
         sprite.setPosition(dx, dy);

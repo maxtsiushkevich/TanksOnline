@@ -40,38 +40,32 @@ class CollisionWithTankVisitor : public IVisitor {
 public:
     void visit(PlayerTank &tank) override;
     void visit(EnemyTank &tank) override;
-
     void visit(PlayerBullet &bullet) override;
     void visit(PlayerFastBullet &bullet) override;
     void visit(PlayerPowerfulBullet &bullet) override;
     void visit(EnemyBullet &bullet) override;
     void visit(EnemyFastBullet &bullet) override;
-
     void visit(Brick &object) override {};
     void visit(Metal &object) override {};
     void visit(Water &object) override {};
     void visit(Grass &object) override {};
     void visit(Eagle &object) override {};
-
     void visit(Bonus &bonus) override;
 };
 
 class CollisionWithBulletVisitor : public IVisitor {
     void visit(PlayerTank &tank) override;
     void visit(EnemyTank &tank) override;
-
     void visit(PlayerBullet &bullet) override;
     void visit(PlayerFastBullet &bullet) override;
     void visit(PlayerPowerfulBullet &bullet) override;
     void visit(EnemyBullet &bullet) override;
     void visit(EnemyFastBullet &bullet) override;
-
     void visit(Brick &object) override;
     void visit(Metal &object) override;
     void visit(Water &object) override;
     void visit(Grass &object) override;
     void visit(Eagle &object) override;
-
     void visit(Bonus &object) override {};
 
 };
@@ -80,19 +74,16 @@ class CollisionWithMapObjectVisitor : public IVisitor
 {
     void visit(PlayerTank &tank) override;
     void visit(EnemyTank &tank) override;
-
     void visit(PlayerBullet &bullet) override;
     void visit(PlayerFastBullet &bullet) override;
     void visit(PlayerPowerfulBullet &bullet) override;
     void visit(EnemyBullet &bullet) override;
     void visit(EnemyFastBullet &bullet) override;
-
     void visit(Brick &object) override {};
     void visit(Metal &object) override {};
     void visit(Water &object) override {};
     void visit(Grass &object) override {};
     void visit(Eagle &object) override {};
-
     void visit(Bonus &bonus) override {};
 };
 

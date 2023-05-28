@@ -2,13 +2,11 @@
 #include <SFML/Graphics.hpp>
 #include "../headers/GameEngine.h"
 
-
-float FACTOR = 3.f;
+float FACTOR = 4.f;
 
 pthread_mutex_t mutex;
 
-int firstMenu(sf::RenderWindow &window)
-{
+int firstMenu(sf::RenderWindow &window) {
     std::vector<std::string> menuItems = {"1 PLAYER", "2 PLAYERS", "ONLINE"};
     int selectedItemIndex = 0;
 
@@ -23,43 +21,33 @@ int firstMenu(sf::RenderWindow &window)
 
     std::vector<sf::Text> menuTexts;
     for (size_t i = 0; i < menuItems.size(); i++) {
-        sf::Text menuItem(menuItems[i], font, 6*FACTOR);
+        sf::Text menuItem(menuItems[i], font, 6 * FACTOR);
         menuItem.setOrigin(menuItem.getGlobalBounds().width / 2.f, menuItem.getGlobalBounds().height / 2.f);
-        menuItem.setPosition(centerX, centerY + i * 10 *FACTOR);
+        menuItem.setPosition(centerX, centerY + i * 10 * FACTOR);
         menuTexts.push_back(menuItem);
     }
     menuTexts[selectedItemIndex].setFillColor(sf::Color::Red);
 
-    while(window.isOpen())
-    {
+    while (window.isOpen()) {
         sf::Event event;
-        while (window.pollEvent(event))
-        {
+        while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
-            else if (event.type == sf::Event::KeyPressed)
-            {
-                if (event.key.code == sf::Keyboard::Up)
-                {
-                    if (selectedItemIndex > 0)
-                    {
+            else if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Up) {
+                    if (selectedItemIndex > 0) {
                         menuTexts[selectedItemIndex].setFillColor(sf::Color::White);
                         selectedItemIndex--;
                         menuTexts[selectedItemIndex].setFillColor(sf::Color::Red);
                     }
-                }
-                else if (event.key.code == sf::Keyboard::Down)
-                {
+                } else if (event.key.code == sf::Keyboard::Down) {
                     if (selectedItemIndex < menuItems.size() - 1) {
                         menuTexts[selectedItemIndex].setFillColor(sf::Color::White);
                         selectedItemIndex++;
                         menuTexts[selectedItemIndex].setFillColor(sf::Color::Red);
                     }
-                }
-                else if (event.key.code == sf::Keyboard::Return)
-                {
-                    switch (selectedItemIndex)
-                    {
+                } else if (event.key.code == sf::Keyboard::Return) {
+                    switch (selectedItemIndex) {
                         case 0:
                             std::cout << "1 player" << std::endl;
                             return 0;
@@ -86,8 +74,7 @@ int firstMenu(sf::RenderWindow &window)
     exit(0);
 }
 
-int main()
-{
+int main() {
     sf::RenderWindow window;
     window.create(sf::VideoMode(208. * FACTOR + 32. * FACTOR, 208. * FACTOR), "Tanks Online",
                   sf::Style::Close | sf::Style::Titlebar);
@@ -97,8 +84,7 @@ int main()
 
     GameEngine engine(window);
 
-    switch (mode)
-    {
+    switch (mode) {
         case 0:
             engine.init(false, false);
             break;
@@ -109,17 +95,14 @@ int main()
             engine.init(true, true);
             break;
     }
-    while (window.isOpen())
-    {
+    while (window.isOpen()) {
         sf::Event event;
-        while (window.pollEvent(event))
-        {
+        while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 window.close();
                 engine.end();
                 exit(0);
-            }
-            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
+            } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
                 engine.togglePause();
         }
         window.clear();
@@ -127,11 +110,10 @@ int main()
         pthread_mutex_lock(&mutex);
 
         engine.update();
-
         if (engine.getIsServer())
             engine.handleCollisions();
-
         engine.render();
+
         pthread_mutex_unlock(&mutex);
         usleep(1);
         window.display();
@@ -139,7 +121,3 @@ int main()
     engine.end();
     return 0;
 }
-
-
-
-

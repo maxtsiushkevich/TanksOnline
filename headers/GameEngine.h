@@ -38,7 +38,7 @@ private:
     int levelNum;
     bool isPaused; // flag is game on pause
     int remainingEnemies; // remaining enemies on level
-    bool isAllyTankDestroyed; // что бы не посылать пустой объект танка союзника, если он уничтожен, а на его стороне не пытаться десериализовать его
+    int enemiesOnScreen;
 };
 
 struct ClientServerArgs
@@ -50,45 +50,23 @@ struct ClientServerArgs
 class GameEngine
 {
 private:
-
-    /*
-    //std::shared_ptr<IGameObject> bonus;
-    //std::vector<std::shared_ptr<IGameObject>> allBullets; // all bullets are stored here
-    //std::vector<std::shared_ptr<IGameObject>> enemyTanks; // all enemies are stored here
-    //std::vector<std::shared_ptr<IGameObject>> map;
-    //int points;
-    //bool isPaused; // flag is game on pause
-    //int remainingEnemies; // remaining enemies on level
-    //int levelNum; */
-
     sf::Font font; // main font in game
-
     sf::RenderWindow &window; // main window
     sf::Texture mainTexture;
     sf::Sprite hud; // sprite with HUD
     sf::Clock timeBetweenFrames;
     sf::Clock clockBonusTimer; // еimer that counts how long the bonus is valid
-
     GameState gameState;
-
     Multiplayer multiplayer;
-
     bool isServer;
     bool isClient;
     bool isTwoPlayers; // is 2 players on one computer
     bool isOnline; // is online game
-
     bool isFlagFallen; // flag is base destroyed
-
-
-    int enemiesOnScreen;
     int timeBetweenRenderEnemyTank;
-
     bool isClockBonusActive; // flag is clock bonus active, because this bonus stopped all enemies
     int enemyWithBonusCounter; // every 4th enemy drops bonus
-
     pthread_t thread;
-
 
 public:
     GameEngine(sf::RenderWindow &window) : window(window) {}
@@ -107,7 +85,7 @@ public:
     void renderHUD();
     void end();
     void restart();
-    bool getIsServer();
+    bool getIsServer() const;
     void connect();
 };
 

@@ -3,6 +3,8 @@
 
 #include "../headers/IGameObject.h"
 
+#define INVULNERABLE_TIME_FOR_BASE 10
+
 extern float FACTOR;
 
 class MapObject : public IGameObject {
@@ -52,13 +54,17 @@ class Eagle : public MapObject
     friend class GameState;
 protected:
     bool isFallen;
+    bool isInvulnerable;
+    sf::Clock invulnerableTime;
 public:
     Eagle(float x, float y);
     void update(float time) override;
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
     void setIsFallen();
-    bool getIsFallen();
+
+    bool getIsInvulnerable() const;
+    void setIsInvulnerable();
 };
 
-#endif //GAME_MAPOBJECT_H
+#endif

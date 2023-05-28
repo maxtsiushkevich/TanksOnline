@@ -8,16 +8,12 @@ void Map::loadMap(std::vector<std::shared_ptr<IGameObject>> &map, int levelNum)
 {
     map.clear();
     std::string levelFile = "Levels/level" + std::to_string(levelNum) + ".txt";
-
     std::cout << levelFile << std::endl;
-
     std::ifstream file(levelFile);
-
     if (!file.is_open()) {
         std::cout << "Не удалось открыть файл!" << std::endl;
         exit(0);
     }
-
     float x = 0;
     float y = 0;
     char c;
@@ -54,18 +50,6 @@ void Map::loadMap(std::vector<std::shared_ptr<IGameObject>> &map, int levelNum)
         }
     }
     file.close();
-}
-
-void Map::update(std::vector<std::shared_ptr<IGameObject>> &map)
-{
-//    for (auto it = map.begin(); it != map.end(); )
-//    {
-//        auto* mapObj = dynamic_cast<MapObject*>(it->get());
-//        if (mapObj && mapObj->getIsDestroyed())
-//            it = map.erase(it);
-//        else
-//            ++it;
-//    }
 }
 
 void Map::render(std::vector<std::shared_ptr<IGameObject>> &map, sf::RenderWindow &window) {

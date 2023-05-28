@@ -16,7 +16,7 @@ Bullet::Bullet(float x, float y, float speed, Destination dest, std::shared_ptr<
             sprite.setTextureRect(sf::IntRect(322, 101, 5, 6));
             break;
         case DOWN:
-            dx = x + 5.f * FACTOR; ////
+            dx = x + 5.f * FACTOR;
             dy = y + 15.f * FACTOR;
             sprite.setTextureRect(sf::IntRect(338, 101, 5, 6));
             break;
@@ -27,7 +27,7 @@ Bullet::Bullet(float x, float y, float speed, Destination dest, std::shared_ptr<
             break;
         case RIGHT:
             dx = x + 15.f * FACTOR;
-            dy = y + 5.f * FACTOR; /////
+            dy = y + 5.f * FACTOR;
             sprite.setTextureRect(sf::IntRect(345, 101, 6, 5));
             break;
     }
@@ -43,7 +43,6 @@ bool Bullet::checkBounds() {
         return true;
     }
     return false;
-
 }
 
 void Bullet::update(float time) {

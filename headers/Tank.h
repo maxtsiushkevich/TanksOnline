@@ -84,6 +84,9 @@ public:
     void setAnimation(int animation) { this->animation = animation; }
     int getAnimation() { return stars; }
 
+    bool getCanShoot() { return canShoot; }
+    void setCanShoot(bool newState) { canShoot = newState; }
+
     void setSprite() {
         if (tankDestination == LEFT)
             sprite.setTextureRect(sf::IntRect(32 + (16 * animation), stars * 16, 16, 16));
@@ -122,6 +125,17 @@ public:
     int getType() const;
 
     void setIsBonusTank(bool newState) { isBonusTank = newState; }
+
+    void setSprite() {
+        if (tankDestination == LEFT)
+            sprite.setTextureRect(sf::IntRect(160 + (16 * animation), 64 + (static_cast<int>(type) * 16), 16, 16));
+        else if (tankDestination == RIGHT)
+            sprite.setTextureRect(sf::IntRect(224 + (16 * animation), 64 + (static_cast<int>(type) * 16), 16, 16));
+        else if (tankDestination == DOWN)
+            sprite.setTextureRect(sf::IntRect(192 + (16 * animation), 64 + (static_cast<int>(type) * 16), 16, 16));
+        else if (tankDestination == UP)
+            sprite.setTextureRect(sf::IntRect(128 + (16 * animation), 64 + (static_cast<int>(type) * 16), 16, 16));
+    }
 };
 
 #endif

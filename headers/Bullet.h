@@ -22,7 +22,6 @@ public:
     void render(sf::RenderWindow &window) override;
     bool checkBounds();
     std::shared_ptr<IGameObject> getOwner() const;
-
     int getDestination() { return bulletDestination; }
     void setDestination(int newDestination) { bulletDestination = static_cast<Destination>(newDestination); }
 };

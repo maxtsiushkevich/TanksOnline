@@ -8,13 +8,11 @@ Bonus::Bonus(float x, float y, int type) : IGameObject(x, y) {
     sprite.setScale(FACTOR, FACTOR);
 }
 
-bool Bonus :: getIsPicked() const
-{
+bool Bonus::getIsPicked() const {
     return isPicked;
 }
 
-void Bonus::setIsPicked()
-{
+void Bonus::setIsPicked() {
     isPicked = true;
 }
 
@@ -23,13 +21,14 @@ void update(float time) {
 
 void Bonus::render(sf::RenderWindow &window) {
     window.draw(sprite);
-};
+}
 
-void Bonus::handleCollision(IVisitor *visitor) { visitor->visit(*this); };
+void Bonus::handleCollision(IVisitor *visitor) {
+    visitor->visit(*this);
+}
 
-BonusType Bonus:: getBonusType()
-{
+BonusType Bonus::getBonusType() {
     return type;
 }
 
-void Bonus:: update(float time) { }
+void Bonus::update(float time) {}

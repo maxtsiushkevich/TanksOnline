@@ -1,4 +1,5 @@
 #include "../headers/MapObject.h"
+#include <iostream>
 
 MapObject::MapObject(float x, float y) : IGameObject(x, y) {
     sprite.setPosition(x, y);
@@ -23,6 +24,8 @@ Grass::Grass(float x, float y) : MapObject(x, y) {
 
 Eagle::Eagle(float x, float y) : MapObject(x, y) {
     isFallen = false;
+    isInvulnerable = false;
+    invulnerableTime.restart();
     sprite.setTextureRect(sf::IntRect(304, 32, 16, 16));
 }
 
@@ -80,6 +83,16 @@ void Water::update(float time) {}
 
 void Grass::update(float time) {}
 
-void Eagle::update(float time) {}
+void Eagle::update(float time) {
+    if (invulnerableTime.getElapsedTime().asSeconds() > INVULNERABLE_TIME_FOR_BASE)
+        isInvulnerable = false;
+}
 
-bool Eagle::getIsFallen() { return isFallen; }
+void Eagle::setIsInvulnerable() {
+    isInvulnerable = true;
+    invulnerableTime.restart();
+}
+
+bool Eagle::getIsInvulnerable() const {
+    return isInvulnerable;
+}

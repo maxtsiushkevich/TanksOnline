@@ -5,15 +5,13 @@
 #include "../headers/MapObject.h"
 #include "../headers/Bonus.h"
 
-void CollisionWithTankVisitor::visit(PlayerTank &tank)
-{
+void CollisionWithTankVisitor::visit(PlayerTank &tank) {
     float distance = tank.getTime() * tank.getSpeed();
     tank.decrementAnimation();
     tank.move(-distance);
 }
 
-void CollisionWithTankVisitor :: visit(EnemyTank &tank)
-{
+void CollisionWithTankVisitor::visit(EnemyTank &tank) {
     float distance = tank.getTime() * tank.getSpeed();
     tank.decrementAnimation();
     tank.move(-distance);
@@ -24,59 +22,50 @@ void CollisionWithTankVisitor::visit(PlayerBullet &bullet) // столкнове
     bullet.setIsDestroyed();
 }
 
-void CollisionWithTankVisitor::visit(PlayerFastBullet &bullet)
-{
+void CollisionWithTankVisitor::visit(PlayerFastBullet &bullet) {
     bullet.setIsDestroyed();
 }
 
-void CollisionWithTankVisitor::visit(PlayerPowerfulBullet &bullet)
-{
+void CollisionWithTankVisitor::visit(PlayerPowerfulBullet &bullet) {
     bullet.setIsDestroyed();
 }
 
-void CollisionWithTankVisitor::visit(EnemyBullet &bullet)
-{
+void CollisionWithTankVisitor::visit(EnemyBullet &bullet) {
     bullet.setIsDestroyed();
 }
 
-void CollisionWithTankVisitor::visit(EnemyFastBullet &bullet)
-{
+void CollisionWithTankVisitor::visit(EnemyFastBullet &bullet) {
     bullet.setIsDestroyed();
 }
 
-void CollisionWithTankVisitor :: visit(Bonus &bonus)
-{
+void CollisionWithTankVisitor::visit(Bonus &bonus) {
     bonus.setIsPicked();
 }
 
-void CollisionWithBulletVisitor::visit(PlayerTank &tank) // столкновение танка с пулей, вражеские помечаются как удаленные
+void
+CollisionWithBulletVisitor::visit(PlayerTank &tank) // столкновение танка с пулей, вражеские помечаются как удаленные
 {
     if (!tank.getIsInvulnerable())
         tank.reset();
 }
 
-void CollisionWithBulletVisitor::visit(EnemyTank &tank)
-{
+void CollisionWithBulletVisitor::visit(EnemyTank &tank) {
     tank.decrementHealth();
 }
 
-void CollisionWithBulletVisitor::visit(PlayerBullet &bullet)
-{
+void CollisionWithBulletVisitor::visit(PlayerBullet &bullet) {
     bullet.setIsDestroyed();
 }
 
-void CollisionWithBulletVisitor::visit(PlayerFastBullet &bullet)
-{
+void CollisionWithBulletVisitor::visit(PlayerFastBullet &bullet) {
     bullet.setIsDestroyed();
 }
 
-void CollisionWithBulletVisitor::visit(PlayerPowerfulBullet &bullet)
-{
+void CollisionWithBulletVisitor::visit(PlayerPowerfulBullet &bullet) {
     bullet.setIsDestroyed();
 }
 
-void CollisionWithBulletVisitor::visit(EnemyBullet &bullet)
-{
+void CollisionWithBulletVisitor::visit(EnemyBullet &bullet) {
     bullet.setIsDestroyed();
 }
 
@@ -89,26 +78,22 @@ void CollisionWithBulletVisitor::visit(Brick &object) // вызов зависи
     object.setIsDestroyed();
 }
 
-void CollisionWithBulletVisitor::visit(Metal &object)
-{
+void CollisionWithBulletVisitor::visit(Metal &object) {
     object.setIsDestroyed();
 }
 
-void CollisionWithBulletVisitor::visit(Water &object)
-{
+void CollisionWithBulletVisitor::visit(Water &object) {
 }
 
-void CollisionWithBulletVisitor::visit(Grass &object)
-{
+void CollisionWithBulletVisitor::visit(Grass &object) {
 }
 
-void CollisionWithBulletVisitor::visit(Eagle &object)
-{
-    object.setIsFallen();
+void CollisionWithBulletVisitor::visit(Eagle &object) {
+    if (!object.getIsInvulnerable())
+        object.setIsFallen();
 }
 
-void CollisionWithMapObjectVisitor::visit(PlayerTank &tank)
-{
+void CollisionWithMapObjectVisitor::visit(PlayerTank &tank) {
     float distance = tank.getTime() * tank.getSpeed();
     tank.decrementAnimation();
     tank.move(-distance);
@@ -121,27 +106,22 @@ void CollisionWithMapObjectVisitor::visit(EnemyTank &tank) // надо отод�
     tank.move(-distance);
 }
 
-void CollisionWithMapObjectVisitor::visit(PlayerBullet &bullet)
-{
+void CollisionWithMapObjectVisitor::visit(PlayerBullet &bullet) {
     bullet.setIsDestroyed();
 }
 
-void CollisionWithMapObjectVisitor::visit(PlayerFastBullet &bullet)
-{
+void CollisionWithMapObjectVisitor::visit(PlayerFastBullet &bullet) {
     bullet.setIsDestroyed();
 }
 
-void CollisionWithMapObjectVisitor::visit(PlayerPowerfulBullet &bullet)
-{
+void CollisionWithMapObjectVisitor::visit(PlayerPowerfulBullet &bullet) {
     bullet.setIsDestroyed();
 }
 
-void CollisionWithMapObjectVisitor::visit(EnemyBullet &bullet)
-{
+void CollisionWithMapObjectVisitor::visit(EnemyBullet &bullet) {
     bullet.setIsDestroyed();
 }
 
-void CollisionWithMapObjectVisitor::visit(EnemyFastBullet &bullet)
-{
+void CollisionWithMapObjectVisitor::visit(EnemyFastBullet &bullet) {
     bullet.setIsDestroyed();
 }

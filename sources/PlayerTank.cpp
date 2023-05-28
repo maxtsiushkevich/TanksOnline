@@ -9,10 +9,11 @@
 #define ALLY_SPAWN_Y 192
 
 
-PlayerTank::PlayerTank(float x, float y, std::vector<std::shared_ptr<IGameObject>> &allBullets, bool isAllyTank) : Tank(x, y,
-                                                                                                       TANK_SPEED, 3,
-                                                                                                       allBullets),
-                                                                                                  stars(0) {
+PlayerTank::PlayerTank(float x, float y, std::vector<std::shared_ptr<IGameObject>> &allBullets, bool isAllyTank) : Tank(
+        x, y,
+        TANK_SPEED, 3,
+        allBullets),
+                                                                                                                   stars(0) {
     this->isAllyTank = isAllyTank;
     previousButton = UP;
     invulnerableTime.restart();
@@ -33,12 +34,10 @@ void PlayerTank::reset() {
     health--;
     if (health == 0)
         isDestroyed = true;
-    if (isAllyTank)
-    {
+    if (isAllyTank) {
         dx = ALLY_SPAWN_X * FACTOR;
         dy = ALLY_SPAWN_Y * FACTOR;
-    }
-    else {
+    } else {
         dx = PLAYER_SPAWN_X * FACTOR;
         dy = PLAYER_SPAWN_Y * FACTOR;
     }
@@ -55,9 +54,8 @@ void PlayerTank::reset() {
 void PlayerTank::render(sf::RenderWindow &window) {
     window.draw(sprite);
 
-    if (isInvulnerable)
-    {
-        if (animation == 2 )
+    if (isInvulnerable) {
+        if (animation == 2)
             animation = 0;
 
         sf::Sprite effect;
@@ -69,19 +67,19 @@ void PlayerTank::render(sf::RenderWindow &window) {
     }
 }
 
-void PlayerTank::update(float time)
-{
+void PlayerTank::update(float time) {
     if (invulnerableTime.getElapsedTime().asSeconds() > INVULNERABLE_TIME)
         isInvulnerable = false;
 
     this->time = time;
     float distance = speed * time;
-    if (((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !isAllyTank) || (sf::Keyboard::isKeyPressed(sf::Keyboard::RShift) && isAllyTank)) && canShoot && !isShootButtonPressed) // добавить выстрел на разные кнопки
-    {
+
+    if (((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !isAllyTank) ||
+         (sf::Keyboard::isKeyPressed(sf::Keyboard::RShift) && isAllyTank)) && canShoot && !isShootButtonPressed) {
         this->shoot();
         isShootButtonPressed = true;
-    }
-    else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !isAllyTank) || (sf::Keyboard::isKeyPressed(sf::Keyboard::RShift) && isAllyTank))
+    } else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !isAllyTank) ||
+               (sf::Keyboard::isKeyPressed(sf::Keyboard::RShift) && isAllyTank))
         isShootButtonPressed = true;
     else
         isShootButtonPressed = false;
@@ -89,8 +87,7 @@ void PlayerTank::update(float time)
     this->move(distance);
 }
 
-void PlayerTank::shoot()
-{
+void PlayerTank::shoot() {
     std::shared_ptr<IGameObject> bullet;
     switch (stars) {
         case 0:
@@ -111,7 +108,6 @@ void PlayerTank::shoot()
             canShoot = false;
             break;
     }
-
     if (bullet)
         allBullets.emplace_back(std::move(bullet));
 }
@@ -125,7 +121,8 @@ void PlayerTank::move(float distance) {
     if (animation == 2) // обработка движения
         animation = 0;
 
-    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !isAllyTank) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && isAllyTank)) {
+    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !isAllyTank) ||
+        (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && isAllyTank)) {
         sprite.setTextureRect(sf::IntRect(32 + (16 * animation), stars * 16, 16, 16));
         dx -= distance;
         if (sprite.getPosition().x < 0) // проверка на выезд за предел экрана
@@ -139,8 +136,8 @@ void PlayerTank::move(float distance) {
         }
         previousButton = LEFT;
         tankDestination = LEFT;
-    } else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !isAllyTank) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && isAllyTank))
-    {
+    } else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !isAllyTank) ||
+               (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && isAllyTank)) {
         sprite.setTextureRect(sf::IntRect(96 + (16 * animation), stars * 16, 16, 16));
         dx += distance;
         if (sprite.getPosition().x > 192 * FACTOR) // проверка на выезд за предел экрана
@@ -154,9 +151,8 @@ void PlayerTank::move(float distance) {
         }
         previousButton = RIGHT;
         tankDestination = RIGHT;
-    }
-    else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !isAllyTank) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && isAllyTank))
-    {
+    } else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !isAllyTank) ||
+               (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && isAllyTank)) {
         sprite.setTextureRect(sf::IntRect(64 + (16 * animation), stars * 16, 16, 16));
         dy += distance;
         if (sprite.getPosition().y > 192 * FACTOR) // проверка на выезд за предел экрана
@@ -170,8 +166,8 @@ void PlayerTank::move(float distance) {
         }
         previousButton = DOWN;
         tankDestination = DOWN;
-    }
-    else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isAllyTank) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && isAllyTank)) {
+    } else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isAllyTank) ||
+               (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && isAllyTank)) {
         sprite.setTextureRect(
                 sf::IntRect(0 + (16 * animation), stars * 16, 16, 16)); // по строкам в зависимости от звезд
         dy -= distance;
