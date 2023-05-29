@@ -35,7 +35,6 @@ public:
     virtual void visit(Bonus& bonus) = 0;
     virtual ~IVisitor() = default;
 };
-
 class CollisionWithTankVisitor : public IVisitor {
 public:
     void visit(PlayerTank &tank) override;
@@ -52,7 +51,6 @@ public:
     void visit(Eagle &object) override {};
     void visit(Bonus &bonus) override;
 };
-
 class CollisionWithBulletVisitor : public IVisitor {
     void visit(PlayerTank &tank) override;
     void visit(EnemyTank &tank) override;
@@ -69,7 +67,6 @@ class CollisionWithBulletVisitor : public IVisitor {
     void visit(Bonus &object) override {};
 
 };
-
 class CollisionWithMapObjectVisitor : public IVisitor
 {
     void visit(PlayerTank &tank) override;

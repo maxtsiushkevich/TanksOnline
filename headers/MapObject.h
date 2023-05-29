@@ -12,7 +12,6 @@ class MapObject : public IGameObject {
 public:
     MapObject(float x, float y);
 };
-
 class Brick : public MapObject {
     friend class GameState;
 public:
@@ -21,7 +20,6 @@ public:
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
 };
-
 class Metal : public MapObject {
     friend class GameState;
 public:
@@ -30,7 +28,6 @@ public:
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
 };
-
 class Water : public MapObject {
     friend class GameState;
 public:
@@ -39,7 +36,6 @@ public:
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
 };
-
 class Grass : public MapObject {
     friend class GameState;
 public:
@@ -48,7 +44,6 @@ public:
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
 };
-
 class Eagle : public MapObject
 {
     friend class GameState;
@@ -62,7 +57,6 @@ public:
     void render(sf::RenderWindow &window) override;
     void handleCollision(IVisitor *visitor) override;
     void setIsFallen();
-
     bool getIsInvulnerable() const;
     void setIsInvulnerable();
 };

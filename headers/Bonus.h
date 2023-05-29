@@ -30,6 +30,4 @@ public:
     void handleCollision(IVisitor *visitor) override;
     BonusType getBonusType();
 };
-
-
 #endif //GAME_BONUS_H

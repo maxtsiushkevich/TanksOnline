@@ -4,7 +4,7 @@ CXX := g++
 
 CXXFLAGS := -std=c++17 -lboost_serialization
 
-SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system -pthread -lboost_serialization
+LIBS := -lsfml-graphics -lsfml-window -lsfml-system -pthread -lboost_serialization
 
 SRC_DIR := sources
 OBJ_DIR := objects
@@ -17,7 +17,7 @@ OBJS := $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 DEPS := $(wildcard $(SRC_DIR)/*.h)
 
 $(APP_NAME): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(SFML_LIBS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(DEPS)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
