@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "../headers/GameEngine.h"
 
-float FACTOR = 4.f;
+float FACTOR = 5.f;
 
 pthread_mutex_t mutex;
 

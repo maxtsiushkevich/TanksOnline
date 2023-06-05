@@ -268,7 +268,7 @@ void SendReceiveMessage::parsingMessageForServer(GameState &gameState) {
     if (gameState.playerTank2.use_count() != 0) {
         gameState.playerTank2->setX(this->pt[1].dx);
         gameState.playerTank2->setY(this->pt[1].dy);
-        dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->setTime(this->pt[1].time);
+        //dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->setTime(this->pt[1].time);
         gameState.playerTank2->setIsDestroyed(this->pt[1].isDestroyed);
         dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->setStars(this->pt[1].stars);
         dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->setDestination(this->pt[1].destination);

@@ -13,6 +13,12 @@
 
 #define FONT_NAME "Font.ttf"
 #define SPRITE_LIST_NAME "SpriteList.png"
+#define TIME_BETWEEN_RENDER_ENEMY_TANK 150
+#define MAX_LEVEL_NUM 5
+#define ENEMIES_ON_LEVEL 18
+#define CLOCK_BONUS_TIME 15
+#define BONUS_POINTS 500
+#define PORT 6005
 
 
 extern float FACTOR;

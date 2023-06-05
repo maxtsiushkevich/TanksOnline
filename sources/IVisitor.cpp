@@ -5,16 +5,81 @@
 #include "../headers/MapObject.h"
 #include "../headers/Bonus.h"
 
-void CollisionWithTankVisitor::visit(PlayerTank &tank) {
-    float distance = tank.getTime() * tank.getSpeed();
-    tank.decrementAnimation();
-    tank.move(-distance);
+void CollisionWithTankVisitor::visit(PlayerTank &tank)
+{
+    //float distance = tank.getTime() * tank.getSpeed();
+    //tank.decrementAnimation();
+    //tank.move(-distance);
+
+    int newX = tank.getX();
+    int newY = tank.getY();
+
+    Destination tankDestination = static_cast<Destination>(tank.getDestination());
+
+    if (tankDestination == UP)
+    {
+        while (newY % (int)(8 * FACTOR) != 0)
+            newY++;
+    }
+    else if (tankDestination == DOWN)
+    {
+        while (newY % (int)(8 * FACTOR) != 0)
+            newY--;
+    }
+    else if (tankDestination == LEFT)
+    {
+        while (newX % (int)(8 * FACTOR) != 0)
+            newX++;
+    }
+    else if (tankDestination == RIGHT)
+    {
+        while (newX % (int)(8 * FACTOR) != 0)
+            newX--;
+    }
+
+    tank.setX(newX);
+    tank.setY(newY);
+
+    tank.setSprite();
+
 }
 
-void CollisionWithTankVisitor::visit(EnemyTank &tank) {
+void CollisionWithTankVisitor::visit(EnemyTank &tank)
+{
     float distance = tank.getTime() * tank.getSpeed();
     tank.decrementAnimation();
     tank.move(-distance);
+
+//    int newX = tank.getX();
+//    int newY = tank.getY();
+//
+//    Destination tankDestination = static_cast<Destination>(tank.getDestination());
+//
+//    if (tankDestination == UP)
+//    {
+//        while (newY % (int)(8 * FACTOR) != 0)
+//            newY++;
+//    }
+//    else if (tankDestination == DOWN)
+//    {
+//        while (newY % (int)(8 * FACTOR) != 0)
+//            newY--;
+//    }
+//    else if (tankDestination == LEFT)
+//    {
+//        while (newX % (int)(8 * FACTOR) != 0)
+//            newX++;
+//    }
+//    else if (tankDestination == RIGHT)
+//    {
+//        while (newX % (int)(8 * FACTOR) != 0)
+//            newX--;
+//    }
+//
+//    tank.setX(newX);
+//    tank.setY(newY);
+//
+//    tank.setSprite();
 }
 
 void CollisionWithTankVisitor::visit(PlayerBullet &bullet) // столкновение пули с танком
@@ -93,10 +158,42 @@ void CollisionWithBulletVisitor::visit(Eagle &object) {
         object.setIsFallen();
 }
 
-void CollisionWithMapObjectVisitor::visit(PlayerTank &tank) {
-    float distance = tank.getTime() * tank.getSpeed();
-    tank.decrementAnimation();
-    tank.move(-distance);
+void CollisionWithMapObjectVisitor::visit(PlayerTank &tank)
+{
+    int newX = tank.getX();
+    int newY = tank.getY();
+
+    Destination tankDestination = static_cast<Destination>(tank.getDestination());
+
+    if (tankDestination == UP)
+    {
+        while (newY % (int)(8 * FACTOR) != 0)
+            newY++;
+    }
+    else if (tankDestination == DOWN)
+    {
+        while (newY % (int)(8 * FACTOR) != 0)
+            newY--;
+    }
+    else if (tankDestination == LEFT)
+    {
+        while (newX % (int)(8 * FACTOR) != 0)
+            newX++;
+    }
+    else if (tankDestination == RIGHT)
+    {
+        while (newX % (int)(8 * FACTOR) != 0)
+            newX--;
+    }
+
+    tank.setX(newX);
+    tank.setY(newY);
+
+    //tank.setSprite();
+
+    //float distance = tank.getTime() * tank.getSpeed();
+    //tank.decrementAnimation();
+    //tank.move(-distance);
 }
 
 void CollisionWithMapObjectVisitor::visit(EnemyTank &tank) // надо отодвинуть танк

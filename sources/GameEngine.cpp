@@ -6,13 +6,6 @@
 #include <random>
 #include <chrono>
 
-#define TIME_BETWEEN_RENDER_ENEMY_TANK 150
-#define MAX_LEVEL_NUM 30
-#define ENEMIES_ON_LEVEL 18
-#define CLOCK_BONUS_TIME 15
-#define BONUS_POINTS 500
-#define PORT 6005
-
 void GameEngine::init(bool isTwoPlayers, bool isOnline) {
     this->isTwoPlayers = isTwoPlayers;
     this->isOnline = isOnline;
@@ -38,7 +31,6 @@ void GameEngine::init(bool isTwoPlayers, bool isOnline) {
     if (isTwoPlayers)
         gameState.playerTank2 = std::make_shared<PlayerTank>(ALLY_SPAWN_X * FACTOR, ALLY_SPAWN_Y * FACTOR,
                                                              gameState.allBullets, true);
-
     gameState.remainingEnemies = ENEMIES_ON_LEVEL;
     gameState.enemiesOnScreen = 0;
 
@@ -54,14 +46,19 @@ void GameEngine::init(bool isTwoPlayers, bool isOnline) {
         connect();
         ClientServerArgs args{multiplayer, gameState}; // аргументы для потоков
         int tmp = 0;
-        if (isServer)
+        if (isServer) {
+            //gameState.playerTank2.reset();
+            //gameState.playerTank2 = std::make_shared<PlayerTank>(ALLY_SPAWN_X * FACTOR, ALLY_SPAWN_Y * FACTOR,
+            //                                                     gameState.allBullets, false);
             tmp = pthread_create(&thread, nullptr, reinterpret_cast<void *(*)(void *)>(serverAction), &args);
-        else if (isClient) {
+        }
+        else if (isClient)
+        {
             tmp = pthread_create(&thread, nullptr, reinterpret_cast<void *(*)(void *)>(clientAction), &args);
             gameState.playerTank2.reset();
-            gameState.playerTank2 = std::make_shared<PlayerTank>(ALLY_SPAWN_X * FACTOR, ALLY_SPAWN_Y * FACTOR,
-                                                                 gameState.allBullets,
-                                                                 false); // что бы второй игрок по сети мог управлять танком с помощью WASD
+            gameState.playerTank2 = std::make_shared<PlayerTank>(ALLY_SPAWN_X * FACTOR, ALLY_SPAWN_Y * FACTOR,gameState.allBullets,false); // что бы второй игрок по сети мог управлять танком с помощью WASD
+            dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->setIsAllyTankSprite();
+
         }
         if (tmp != 0) {
             std::cout << "Create thread error" << std::endl;
@@ -288,7 +285,7 @@ void GameEngine::update() {
 
             if (gameState.playerTank1.use_count() != 0) {
                 gameState.playerTank1->update(seconds);
-                std::cout << dynamic_cast<PlayerTank *>(gameState.playerTank1.get())->getCanShoot() << std::endl;
+                //std::cout << dynamic_cast<PlayerTank *>(gameState.playerTank1.get())->getCanShoot() << std::endl;
                 if (isTwoPlayers && (gameState.playerTank2.use_count() != 0))
                     gameState.playerTank2->update(
                             seconds); // танк второго игрока двигается у себя, на сервере обрабатываются столкновения и тд
@@ -338,7 +335,7 @@ void GameEngine::updateEnemies(float seconds) {
                     dropBonus();
             }
             gameState.points += (dynamic_cast<EnemyTank *>((*it).get())->getType() + 1) * 100;
-            std::cout << gameState.points << std::endl;
+            //std::cout << gameState.points << std::endl;
             it = gameState.enemyTanks.erase(it);
             gameState.enemiesOnScreen--;
         } else if (!isClockBonusActive) {
@@ -579,7 +576,8 @@ void GameEngine::handleCollisions() {
                 gameState.playerTank1->getSprite().getGlobalBounds()))
             gameState.bonus->handleCollision(visitor.get());
 
-        if (gameState.playerTank2.use_count() != 0 && !gameState.playerTank2->getIsDestroyed()) {
+        if (gameState.playerTank2.use_count() != 0 && !gameState.playerTank2->getIsDestroyed())
+        {
             if (gameState.bonus->getSprite().getGlobalBounds().intersects(
                     gameState.playerTank2->getSprite().getGlobalBounds()))
                 gameState.bonus->handleCollision(visitor.get());
@@ -654,16 +652,20 @@ void GameEngine::renderHUD() {
     window.draw(healthSprite);
 }
 
-void GameEngine::restart() {
+void GameEngine::restart()
+{
     isFlagFallen = false;
     gameState.levelNum = 1;
     timeBetweenRenderEnemyTank = TIME_BETWEEN_RENDER_ENEMY_TANK;
 
     gameState.playerTank1 = std::make_shared<PlayerTank>(PLAYER_SPAWN_X * FACTOR, PLAYER_SPAWN_Y * FACTOR,
                                                          gameState.allBullets, false);
-    if (isTwoPlayers)
+
+    if (isTwoPlayers) {
         gameState.playerTank2 = std::make_shared<PlayerTank>(ALLY_SPAWN_X * FACTOR, ALLY_SPAWN_Y * FACTOR,
                                                              gameState.allBullets, true);
+        dynamic_cast<PlayerTank *>(gameState.playerTank2.get())->setIsAllyTankSprite();
+    }
 
     gameState.bonus.reset();
     gameState.remainingEnemies = 18;
@@ -671,6 +673,8 @@ void GameEngine::restart() {
     gameState.points = 0;
     gameState.allBullets.clear();
     gameState.enemyTanks.clear();
+    for (auto map : gameState.map)
+        map.reset();
     gameState.map.clear();
 
     Map::loadMap(gameState.map, gameState.levelNum);
@@ -814,7 +818,6 @@ void *serverAction(void *arg) {
         const char *data = serializedData.c_str();
         size_t dataSize = serializedData.size();
         write(clientSocket, data, dataSize); // отправляем состояние игры
-
         pthread_mutex_unlock(&mutex);
         usleep(1);
     }
@@ -835,9 +838,9 @@ void *clientAction(void *arg) {
         size_t dataSize = serializedData.size();
         write(clientSocket, data, dataSize);
 
-        pthread_mutex_unlock(&mutex);
-        usleep(1);
-        pthread_mutex_lock(&mutex);
+        //pthread_mutex_unlock(&mutex);
+        //usleep(1);
+        //pthread_mutex_lock(&mutex);
 
         const int bufferSize = sizeof(SendReceiveMessage);
         char buffer[bufferSize];

@@ -12,6 +12,7 @@
 #define ALLY_SPAWN_X 128
 #define ALLY_SPAWN_Y 192
 
+
 enum Destination {
     UP,
     LEFT,

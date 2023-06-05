@@ -78,6 +78,8 @@ public:
     void setIsInvulnerable();
     void setIsInvulnerable(bool newState) { isInvulnerable = newState; };
 
+    void setIsAllyTankSprite() { sprite.setColor(sf::Color(0, 255, 0, 230)); }
+
     void setStars(int newStars) { stars = newStars; }
     int getStars() { return stars; }
 
@@ -86,6 +88,8 @@ public:
 
     bool getCanShoot() { return canShoot; }
     void setCanShoot(bool newState) { canShoot = newState; }
+
+    //bool getIsClientTank() { return isClientTank; }
 
     void setSprite() {
         if (tankDestination == LEFT)
