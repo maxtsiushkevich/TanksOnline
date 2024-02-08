@@ -14,3 +14,10 @@ $ ./Tanks
 ```
 
 Enjoy the game!
+
+# Settings
+## Screen size
+If you are not satisfied with the size of the application window, then you can change the `FACTOR` constant in the `main.cpp` file to whatever is convenient for you.
+
+## Сhange port for connection
+If you want to change the connection port, change the `PORT` constant in the `GameEngine.h` file.
